@@ -3,21 +3,20 @@
 
 FROM --platform=i386 i386/debian:buster
 
-ARG DEBIAN_FRONTEND=noninteractive
-
 RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get -y upgrade \
  && apt-get install -y apt-utils zip unzip vim less binutils curl \
  && rm -rf /var/lib/apt/lists/*
 
-# Create student user
-RUN useradd -m student && echo "student:learn123" | chpasswd \
- && echo "root:admin123" | chpasswd
+# Create user (WebVM expects 'user' not 'student')
+RUN useradd -m user && echo "user:password" | chpasswd \
+ && echo "root:password" | chpasswd
 
 # WebVM environment setup
-RUN mkdir -p /home/student/documents && chown -R student:student /home/student/documents
+RUN mkdir -p /home/user/documents && chown -R user:user /home/user/documents
 
 # LEVEL 1: File System Navigation & Basic Commands
 RUN mkdir -p /game/level1
@@ -70,24 +69,24 @@ RUN chmod +x /tmp/level3/analyze.sh
 # Package Level 3
 RUN cd /tmp && zip -r -P creator /game/level3.zip level3 && rm -rf /tmp/level3
 
-# Copy all starting files to student's home
-RUN cp -r /game/level1 /home/student/ \
- && cp /game/level2.zip /home/student/ \
- && cp /game/level3.zip /home/student/ \
- && chown -R student:student /home/student
+# Copy all starting files to user's home
+RUN cp -r /game/level1 /home/user/ \
+ && cp /game/level2.zip /home/user/ \
+ && cp /game/level3.zip /home/user/ \
+ && chown -R user:user /home/user
 
 # Create welcome script
-RUN printf '#!/bin/bash\nclear\necho "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"\necho "=================================================="\necho ""\necho "This interactive course will teach you:"\necho "• File system navigation (ls, cd, pwd)"\necho "• File operations (touch, cp, mv, rm)"\necho "• Text processing (grep, cut, sort, uniq)"\necho ""\necho "📂 Start with: cd level1 && cat welcome.txt"\necho ""\necho "💡 Helpful commands:"\necho "   help     - Show this message"\necho "   ls       - List files and folders"\necho "   cd       - Change directory"\necho "   cat      - Display file contents"\necho ""\n' > /home/student/start_learning.sh
+RUN printf '#!/bin/bash\nclear\necho "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"\necho "=================================================="\necho ""\necho "This interactive course will teach you:"\necho "• File system navigation (ls, cd, pwd)"\necho "• File operations (touch, cp, mv, rm)"\necho "• Text processing (grep, cut, sort, uniq)"\necho ""\necho "📂 Start with: cd level1 && cat welcome.txt"\necho ""\necho "💡 Helpful commands:"\necho "   help     - Show this message"\necho "   ls       - List files and folders"\necho "   cd       - Change directory"\necho "   cat      - Display file contents"\necho ""\n' > /home/user/start_learning.sh
 
-RUN chmod +x /home/student/start_learning.sh
+RUN chmod +x /home/user/start_learning.sh
 
 # Set up bash configuration
-RUN echo 'alias help="/home/student/start_learning.sh"' >> /home/student/.bashrc \
- && echo '/home/student/start_learning.sh' >> /home/student/.bashrc
+RUN echo 'alias help="/home/user/start_learning.sh"' >> /home/user/.bashrc \
+ && echo '/home/user/start_learning.sh' >> /home/user/.bashrc
 
 # Set working directory and environment variables
-WORKDIR /home/student
-ENV HOME="/home/student" TERM="xterm" USER="student" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
+WORKDIR /home/user
+ENV HOME="/home/user" TERM="xterm" USER="user" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
 
 # Start bash in login mode for WebVM
 CMD ["/bin/bash", "-l"]
