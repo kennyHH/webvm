@@ -42,8 +42,31 @@ RUN echo "current_level:1" > /home/user/.learning_progress \
 
 RUN mkdir -p /home/user/level1
 
-# Create Level 1 welcome and instructions
-RUN printf "🎓 WELCOME TO LINUX LEARNING LAB! 🎓\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n👋 Hello! This is your first time using a Linux terminal!\n   Don't worry - we'll start VERY simple.\n\n🎯 LEVEL 1 GOAL: Learn to make the computer talk to you!\n\n📝 YOUR FIRST CHALLENGES:\n\n1️⃣  Make the computer say hello:\n    Type: echo \"Hello World\"\n\n2️⃣  Ask the computer who you are:\n    Type: whoami\n\n3️⃣  Ask where you are:\n    Type: pwd\n\n4️⃣  Say something about yourself:\n    Type: echo \"My name is [put your name here]\"\n\n5️⃣  Try a fun command:\n    Type: echo \"I am learning Linux!\"\n\n💡 HELP COMMANDS:\n   help  - Show helpful reminders\n   hint  - Get a gentle hint\n   check - Check your progress\n\n🚀 When you've tried all the commands above, type: check\n" > /home/user/level1/welcome.txt
+# Create Level 1 welcome file with simple echo commands
+RUN echo "WELCOME TO LINUX LEARNING LAB!" > /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "Hello! This is your first time using a Linux terminal!" >> /home/user/level1/welcome.txt
+RUN echo "Don't worry - we'll start VERY simple." >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "LEVEL 1 GOAL: Learn to make the computer talk to you!" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "YOUR FIRST CHALLENGES:" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "1. Make the computer say hello:" >> /home/user/level1/welcome.txt
+RUN echo "   Type: echo Hello World" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "2. Ask the computer who you are:" >> /home/user/level1/welcome.txt
+RUN echo "   Type: whoami" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "3. Ask where you are:" >> /home/user/level1/welcome.txt
+RUN echo "   Type: pwd" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "HELP COMMANDS:" >> /home/user/level1/welcome.txt
+RUN echo "  help  - Show helpful reminders" >> /home/user/level1/welcome.txt
+RUN echo "  hint  - Get a gentle hint" >> /home/user/level1/welcome.txt
+RUN echo "  check - Check your progress" >> /home/user/level1/welcome.txt
+RUN echo "" >> /home/user/level1/welcome.txt
+RUN echo "When you've tried the commands above, type: check" >> /home/user/level1/welcome.txt
 
 # Ensure directories exist before creating scripts
 RUN mkdir -p /usr/local/share/learning-scripts/validators /usr/local/share/learning-scripts/helpers /usr/local/share/learning-scripts/content
@@ -76,8 +99,34 @@ RUN chmod +x /usr/local/share/learning-scripts/validators/check_level1.sh
 
 RUN mkdir -p /usr/local/share/learning-scripts/content/level2/practice-files
 
-# Create Level 2 content
-RUN printf "📂 LEVEL 2: EXPLORING FILES AND FOLDERS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to see what files and folders are around you!\n\nIn the real world, you need to look around to see what'"'"'s there.\nIn Linux, we use special commands to \"look around\" digitally!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  See what files are in this folder:\n    Type: ls\n\n2️⃣  See MORE details about the files:\n    Type: ls -l\n    (This shows file sizes, dates, permissions)\n\n3️⃣  See HIDDEN files too:\n    Type: ls -la\n    (Files starting with . are usually hidden)\n\n4️⃣  Look inside the practice-files folder:\n    Type: ls practice-files\n\n5️⃣  See details of practice-files contents:\n    Type: ls -l practice-files\n\n🎯 TREASURE HUNT: Find all 5 files in practice-files!\n   Then type '"'"'check'"'"' to see if you found them all!\n\n💡 Remember: help, hint, and check are always available!\n" > /usr/local/share/learning-scripts/content/level2/welcome.txt
+# Create Level 2 content with simple echo commands
+RUN echo "LEVEL 2: EXPLORING FILES AND FOLDERS" > /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "GOAL: Learn to see what files and folders are around you!" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "In the real world, you need to look around to see what's there." >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "In Linux, we use special commands to look around digitally!" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "YOUR CHALLENGES:" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "1. See what files are in this folder:" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   Type: ls" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "2. See MORE details about the files:" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   Type: ls -l" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   This shows file sizes, dates, permissions" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "3. See HIDDEN files too:" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   Type: ls -la" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   Files starting with . are usually hidden" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "4. Look inside the practice-files folder:" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "   Type: ls practice-files" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "TREASURE HUNT: Find all 5 files in practice-files!" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "Then type 'check' to see if you found them all!" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
+RUN echo "Remember: help, hint, and check are always available!" >> /usr/local/share/learning-scripts/content/level2/welcome.txt
 
 # Create practice files
 RUN echo "Congratulations! You found the first practice file!" > /usr/local/share/learning-scripts/content/level2/practice-files/readme.txt
@@ -113,15 +162,81 @@ RUN chmod +x /usr/local/share/learning-scripts/validators/check_level2.sh
 
 RUN mkdir -p /usr/local/share/learning-scripts/content/level3
 
-# Create Level 3 content
-RUN printf "📖 LEVEL 3: READING FILES (Digital Books!)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to read what'"'"'s inside files!\n\nFiles are like digital books - you need to open them to read!\nIn Linux, we don'"'"'t double-click. We use special commands!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  Read a short file:\n    Type: cat story.txt\n\n2️⃣  Read the instructions file:\n    Type: cat instructions.txt\n\n3️⃣  Look at just the beginning of a long file:\n    Type: head long_story.txt\n\n4️⃣  Look at just the end of a long file:\n    Type: tail long_story.txt\n\n5️⃣  Read a long file page by page:\n    Type: less long_story.txt\n    (Use SPACEBAR to go forward, '"'"'q'"'"' to quit)\n\n🎯 SECRET MISSION: Find the magic word hidden in one of the files!\n   Read all the files and look for the secret word!\n\n💡 TIP: cat is for short files, less is for long files!\n" > /usr/local/share/learning-scripts/content/level3/welcome.txt
+# Create Level 3 content with simple echo commands
+RUN echo "LEVEL 3: READING FILES - Digital Books!" > /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "GOAL: Learn to read what's inside files!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "Files are like digital books - you need to open them to read!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "In Linux, we don't double-click. We use special commands!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "YOUR CHALLENGES:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "1. Read a short file:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Type: cat story.txt" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "2. Read the instructions file:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Type: cat instructions.txt" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "3. Look at just the beginning of a long file:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Type: head long_story.txt" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "4. Look at just the end of a long file:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Type: tail long_story.txt" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "5. Read a long file page by page:" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Type: less long_story.txt" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "   Use SPACEBAR to go forward, 'q' to quit" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "SECRET MISSION: Find the magic word hidden in one of the files!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "Read all the files and look for the secret word!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
+RUN echo "TIP: cat is for short files, less is for long files!" >> /usr/local/share/learning-scripts/content/level3/welcome.txt
 
-# Create readable files for Level 3
-RUN printf "Once upon a time, there was a student learning Linux.\nThey discovered that reading files was easy and fun!\nThe magic word they learned was: EXPLORER\nAnd they lived happily ever after, exploring the digital world!\n" > /usr/local/share/learning-scripts/content/level3/story.txt
+# Create readable files for Level 3 with simple echo commands
+RUN echo "Once upon a time, there was a student learning Linux." > /usr/local/share/learning-scripts/content/level3/story.txt
+RUN echo "They discovered that reading files was easy and fun!" >> /usr/local/share/learning-scripts/content/level3/story.txt
+RUN echo "The magic word they learned was: EXPLORER" >> /usr/local/share/learning-scripts/content/level3/story.txt
+RUN echo "And they lived happily ever after, exploring the digital world!" >> /usr/local/share/learning-scripts/content/level3/story.txt
 
-RUN printf "INSTRUCTIONS FOR LEVEL 3:\n\n1. Use '"'"'cat'"'"' to read short files\n2. Use '"'"'less'"'"' to read long files (press '"'"'q'"'"' to quit)\n3. Use '"'"'head'"'"' to see the beginning of files\n4. Use '"'"'tail'"'"' to see the end of files\n\nRemember: The secret word is hidden in one of these files!\nRead them all to find it!\n" > /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "INSTRUCTIONS FOR LEVEL 3:" > /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "1. Use 'cat' to read short files" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "2. Use 'less' to read long files (press 'q' to quit)" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "3. Use 'head' to see the beginning of files" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "4. Use 'tail' to see the end of files" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "Remember: The secret word is hidden in one of these files!" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
+RUN echo "Read them all to find it!" >> /usr/local/share/learning-scripts/content/level3/instructions.txt
 
-RUN printf "This is a longer story that demonstrates the '"'"'less'"'"' command.\n\nChapter 1: The Beginning\nOnce there was a curious student who wanted to learn Linux.\nThey started with simple commands and built their confidence.\n\nChapter 2: The Journey\nDay by day, they learned new commands.\nFirst echo, then ls, and now reading files!\nEach command was like discovering a new superpower.\n\nChapter 3: The Discovery\nThe student realized that Linux was not scary at all.\nIt was just a different way of talking to computers.\nAnd computers, it turns out, are quite friendly!\n\nChapter 4: The Secret\nIn this story, there is a hidden secret word: READER\nThis word represents someone who can read files in Linux!\n\nChapter 5: The Future\nWith each new skill, the student grew more confident.\nSoon they would be ready for even more advanced commands.\nThe journey of learning never ends!\n\nThe End.\n\nP.S. - You are doing amazing! Keep going!\n" > /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "This is a longer story that demonstrates the 'less' command." > /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Chapter 1: The Beginning" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Once there was a curious student who wanted to learn Linux." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "They started with simple commands and built their confidence." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Chapter 2: The Journey" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Day by day, they learned new commands." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "First echo, then ls, and now reading files!" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Each command was like discovering a new superpower." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Chapter 3: The Discovery" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "The student realized that Linux was not scary at all." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "It was just a different way of talking to computers." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "And computers, it turns out, are quite friendly!" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Chapter 4: The Secret" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "In this story, there is a hidden secret word: READER" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "This word represents someone who can read files in Linux!" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Chapter 5: The Future" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "With each new skill, the student grew more confident." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "Soon they would be ready for even more advanced commands." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "The journey of learning never ends!" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "The End." >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
+RUN echo "P.S. - You are doing amazing! Keep going!" >> /usr/local/share/learning-scripts/content/level3/long_story.txt
 
 # Create simplified Level 3 validator script
 RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level3.sh
@@ -151,7 +266,45 @@ RUN chmod +x /usr/local/share/learning-scripts/validators/check_level3.sh
 RUN mkdir -p /usr/local/share/learning-scripts/content/level4/{treasure,secret,practice}
 
 # Create Level 4 content and navigation structure
-RUN printf "🧭 LEVEL 4: MOVING AROUND (Digital Navigation!)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to move between folders like a digital explorer!\n\nJust like in real life, you need to move around to explore.\nIn Linux, folders are like rooms in a house!\n\n📁 FOLDER STRUCTURE:\nlevel4/\n├── treasure/     (contains gold!)\n├── secret/       (contains mysteries!)\n└── practice/     (for practicing!)\n\n📝 YOUR CHALLENGES:\n\n1️⃣  See where you are right now:\n    Type: pwd\n\n2️⃣  Go into the treasure folder:\n    Type: cd treasure\n\n3️⃣  See what'"'"'s in the treasure folder:\n    Type: ls\n\n4️⃣  Go back to the main level4 folder:\n    Type: cd ..\n    (.. means \"go up one folder\")\n\n5️⃣  Check where you are:\n    Type: pwd\n\n6️⃣  Go into the secret folder:\n    Type: cd secret\n\n7️⃣  Explore what'"'"'s there:\n    Type: ls\n\n8️⃣  Go back to main folder:\n    Type: cd ..\n\n🎯 TREASURE HUNT: Find the golden key in one of the folders!\n\n💡 TIPS:\n   • pwd = shows where you are\n   • cd [folder] = go into folder\n   • cd .. = go back up\n   • ls = see what'"'"'s here\n" > /usr/local/share/learning-scripts/content/level4/welcome.txt
+# Create Level 4 content with simple echo commands
+RUN echo "LEVEL 4: MOVING AROUND - Digital Navigation!" > /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "GOAL: Learn to move between folders like a digital explorer!" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "Just like in real life, you need to move around to explore." >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "In Linux, folders are like rooms in a house!" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "FOLDER STRUCTURE:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "level4/" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "├── treasure/     (contains gold!)" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "├── secret/       (contains mysteries!)" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "└── practice/     (for practicing!)" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "YOUR CHALLENGES:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "1. See where you are right now:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   Type: pwd" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "2. Go into the treasure folder:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   Type: cd treasure" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "3. See what's in the treasure folder:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   Type: ls" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "4. Go back to the main level4 folder:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   Type: cd .." >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   (.. means go up one folder)" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "5. Check where you are:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "   Type: pwd" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "TREASURE HUNT: Find the golden key in one of the folders!" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "TIPS:" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "• pwd = shows where you are" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "• cd [folder] = go into folder" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "• cd .. = go back up" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
+RUN echo "• ls = see what's here" >> /usr/local/share/learning-scripts/content/level4/welcome.txt
 
 # Create treasure hunt files
 RUN echo "🏆 CONGRATULATIONS! You found the golden treasure!" > /usr/local/share/learning-scripts/content/level4/treasure/gold.txt
@@ -191,7 +344,41 @@ RUN chmod +x /usr/local/share/learning-scripts/validators/check_level4.sh
 RUN mkdir -p /usr/local/share/learning-scripts/content/level5
 
 # Create Level 5 content
-RUN printf "✨ LEVEL 5: CREATING FILES AND FOLDERS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to create your own files and folders!\n\nNow you'"'"'re ready to make your own digital creations!\nJust like an artist with a blank canvas!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  Create your first empty file:\n    Type: touch my_first_file.txt\n    Then check it exists: ls\n\n2️⃣  Write something in a file:\n    Type: echo \"Hello, I am learning Linux!\" > my_message.txt\n    Then read it: cat my_message.txt\n\n3️⃣  Create a file with your name:\n    Type: echo \"My name is [YOUR NAME]\" > about_me.txt\n\n4️⃣  Create your first folder:\n    Type: mkdir my_projects\n    Then check it exists: ls\n\n5️⃣  Create another folder:\n    Type: mkdir completed_work\n\n6️⃣  Write a file about your favorite color:\n    Type: echo \"My favorite color is [COLOR]\" > favorite_color.txt\n\n7️⃣  Create a folder inside my_projects:\n    Type: mkdir my_projects/level5_work\n\n🎯 CREATIVE CHALLENGE: Create 3 files and 2 folders!\n   Make them about yourself - be creative!\n\n💡 REMEMBER:\n   • touch = create empty file\n   • echo \"text\" > file.txt = create file with text\n   • mkdir = create folder\n" > /usr/local/share/learning-scripts/content/level5/welcome.txt
+# Create Level 5 content with simple echo commands
+RUN echo "LEVEL 5: CREATING FILES AND FOLDERS" > /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "GOAL: Learn to create your own files and folders!" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "Now you're ready to make your own digital creations!" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "Just like an artist with a blank canvas!" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "YOUR CHALLENGES:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "1. Create your first empty file:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Type: touch my_first_file.txt" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Then check it exists: ls" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "2. Write something in a file:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Type: echo \"Hello, I am learning Linux!\" > my_message.txt" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Then read it: cat my_message.txt" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "3. Create a file with your name:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Type: echo \"My name is [YOUR NAME]\" > about_me.txt" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "4. Create your first folder:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Type: mkdir my_projects" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Then check it exists: ls" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "5. Create another folder:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "   Type: mkdir completed_work" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "CREATIVE CHALLENGE: Create 3 files and 2 folders!" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "Make them about yourself - be creative!" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "REMEMBER:" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "• touch = create empty file" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "• echo \"text\" > file.txt = create file with text" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
+RUN echo "• mkdir = create folder" >> /usr/local/share/learning-scripts/content/level5/welcome.txt
 
 # Create simplified Level 5 validator script
 RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level5.sh
