@@ -40,7 +40,9 @@ RUN echo '# Configure bash history for learning system' >> /home/user/.bashrc &&
     echo 'shopt -s cmdhist' >> /home/user/.bashrc && \
     echo 'PROMPT_COMMAND="history -a; history -c; history -r"' >> /home/user/.bashrc && \
     touch /home/user/.bash_history && \
-    chown user:user /home/user/.bash_history
+    chmod 644 /home/user/.bash_history && \
+    chown user:user /home/user/.bash_history && \
+    chown user:user /home/user/.bashrc
 
 # Create all Level 1 content in one command
 RUN echo "WELCOME TO LINUX LEARNING LAB!" > /home/user/level1/welcome.txt && \
@@ -333,8 +335,11 @@ RUN ln -sf /usr/local/share/learning-scripts/helpers/help.sh /usr/local/bin/help
     echo '# Linux Learning Lab Welcome' >> /home/user/.bashrc && \
     echo '/home/user/welcome.sh' >> /home/user/.bashrc
 
-# Set final ownership and environment
-RUN chown -R user:user /home/user
+# Set final ownership and environment - ensure .bash_history is user-owned
+RUN chown -R user:user /home/user && \
+    touch /home/user/.bash_history && \
+    chmod 644 /home/user/.bash_history && \
+    chown user:user /home/user/.bash_history
 
 # Set working directory and environment
 WORKDIR /home/user
