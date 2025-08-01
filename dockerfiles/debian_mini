@@ -2,7 +2,7 @@
 FROM --platform=i386 i386/debian:buster
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN sudo apt update && apt-get install -y apt-utils zip unzip vim less binutils curl 
+RUN apt update && apt-get install -y apt-utils zip unzip vim less binutils curl 
  
 
 # Create user and set passwords
