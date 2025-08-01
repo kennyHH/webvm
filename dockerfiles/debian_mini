@@ -2,8 +2,13 @@
 FROM --platform=i386 i386/debian:buster
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt-get install -y apt-utils zip unzip vim less binutils curl 
- 
+
+RUN echo "deb http://archive.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list
+
+RUN apt-get update \
+ && apt-get -y upgrade \
+ && apt-get install -y apt-utils zip unzip vim less binutils curl \
+ && rm -rf /var/lib/apt/lists/*
 
 # Create user and set passwords
 RUN useradd -m user && echo "user:password" | chpasswd \
