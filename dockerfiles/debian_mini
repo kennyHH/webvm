@@ -2,10 +2,8 @@
 FROM --platform=i386 i386/debian:buster
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
- && apt-get -y upgrade \
- && apt-get install -y apt-utils zip unzip vim less binutils curl \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y apt-utils zip unzip vim less binutils curl \
+ 
 
 # Create user and set passwords
 RUN useradd -m user && echo "user:password" | chpasswd \
