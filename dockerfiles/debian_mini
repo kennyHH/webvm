@@ -26,8 +26,7 @@ RUN mkdir -p /usr/local/share/learning-scripts/validators && \
     mkdir -p /home/user/completed && \
     echo "current_level:1" > /home/user/.learning_progress && \
     echo "completed_levels:" >> /home/user/.learning_progress && \
-    echo "total_score:0" >> /home/user/.learning_progress && \
-    chown -R user:user /home/user
+    echo "total_score:0" >> /home/user/.learning_progress
 
 # Configure bash history for immediate and persistent logging
 RUN echo '# Configure bash history for learning system' >> /home/user/.bashrc && \
@@ -117,6 +116,10 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "  (password: explorer123)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  echo "  cd level2 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  sed -i "s/current_level:1/current_level:2/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  # Clear history to prevent cross-level contamination' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  > ~/.bash_history' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  history -c' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "History cleared for Level 2!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  echo "Keep practicing! You need to try all 3 commands:"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  if [ $score -lt 1 ]; then echo "  → echo Hello World"; fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
@@ -186,6 +189,10 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "  (password: reader456)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  echo "  cd level3 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  sed -i "s/current_level:2/current_level:3/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  # Clear history to prevent cross-level contamination' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  > ~/.bash_history' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  history -c' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "History cleared for Level 3!"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  echo "Keep practicing! You need to try:"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  if ! grep -q "^ls" ~/.bash_history; then echo "  → ls"; fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
@@ -265,6 +272,10 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "   ✓ File listing (ls, ls -l, ls -la)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  echo "   ✓ File reading (cat, head, tail, less)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  sed -i "s/current_level:3/current_level:completed/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  # Clear history after final completion' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  > ~/.bash_history' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  history -c' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "History cleared - All levels completed!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  echo "Keep practicing! You need to try:"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  if ! grep -q "^cat" ~/.bash_history; then echo "  → cat story.txt"; fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
@@ -335,11 +346,14 @@ RUN ln -sf /usr/local/share/learning-scripts/helpers/help.sh /usr/local/bin/help
     echo '# Linux Learning Lab Welcome' >> /home/user/.bashrc && \
     echo '/home/user/welcome.sh' >> /home/user/.bashrc
 
-# Set final ownership and environment - ensure .bash_history is user-owned
+# Set final ownership and environment - comprehensive ownership fix
 RUN chown -R user:user /home/user && \
-    touch /home/user/.bash_history && \
-    chmod 644 /home/user/.bash_history && \
-    chown user:user /home/user/.bash_history
+    touch /home/user/.bash_history /home/user/.bashrc && \
+    chmod 644 /home/user/.bash_history /home/user/.bashrc && \
+    chmod 755 /home/user /home/user/level1 /home/user/level2 /home/user/level3 /home/user/practice /home/user/completed && \
+    find /home/user -type f -exec chmod 644 {} \; && \
+    find /home/user -type d -exec chmod 755 {} \; && \
+    chown -R user:user /home/user
 
 # Set working directory and environment
 WORKDIR /home/user
