@@ -16,8 +16,14 @@ RUN apt-get update && apt-get -y upgrade && \
     echo "root:password" | chpasswd
 
 # Create all directories and initialize progress tracking
-RUN mkdir -p /usr/local/share/learning-scripts/{validators,helpers,content} && \
-    mkdir -p /home/user/{level1,level2,level3,practice,completed} && \
+RUN mkdir -p /usr/local/share/learning-scripts/validators && \
+    mkdir -p /usr/local/share/learning-scripts/helpers && \
+    mkdir -p /usr/local/share/learning-scripts/content && \
+    mkdir -p /home/user/level1 && \
+    mkdir -p /home/user/level2 && \
+    mkdir -p /home/user/level3 && \
+    mkdir -p /home/user/practice && \
+    mkdir -p /home/user/completed && \
     echo "current_level:1" > /home/user/.learning_progress && \
     echo "completed_levels:" >> /home/user/.learning_progress && \
     echo "total_score:0" >> /home/user/.learning_progress && \
