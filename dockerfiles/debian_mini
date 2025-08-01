@@ -1,4 +1,6 @@
-# Linux Dungeon Game Dockerfile (Enhanced Puzzle Version)
+# Educational Linux Game Dockerfile
+# Based on WebVM - teaches Linux fundamentals through progressive challenges
+
 FROM --platform=i386 i386/debian:buster
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -7,249 +9,240 @@ RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get install -y apt-utils zip unzip vim less binutils curl \
+ && apt-get install -y apt-utils zip unzip vim less binutils curl base64 tree \
  && rm -rf /var/lib/apt/lists/*
 
-# Create user and set passwords
-RUN useradd -m user && echo "user:password" | chpasswd \
- && echo "root:password" | chpasswd
+# Create student user
+RUN useradd -m student && echo "student:learn123" | chpasswd \
+ && echo "root:admin123" | chpasswd
 
 # WebVM environment setup
-RUN mkdir -p /home/user/documents && chown -R user:user /home/user/documents
+RUN mkdir -p /home/student/documents && chown -R student:student /home/student/documents
 
-# Room 1 - Intro (Key encoded in base64)
-RUN mkdir -p /game/room1 \
- && echo "You awaken in a stone chamber. A note is here." > /game/room1/note.txt \
- && echo "Explore. Discover. Use the basics: ls, cd, cat." >> /game/room1/note.txt \
- && echo "A scrap of paper is here with strange text (see code.txt)." >> /game/room1/note.txt \
- && echo "Hint: decoding it might reveal something useful." >> /game/room1/note.txt \
- && echo "VGhlIGtleSBpczogYnJvbnplCg==" > /game/room1/code.txt \
- && echo '#!/bin/bash' > /game/room1/unlock.sh \
- && echo 'read -p "Enter the key you found: " input' >> /game/room1/unlock.sh \
- && echo 'if [ "$input" = "bronze" ]; then' >> /game/room1/unlock.sh \
- && echo '    clear' >> /game/room1/unlock.sh \
- && echo '    castle1="      🏰"' >> /game/room1/unlock.sh \
- && echo '    castle2="    [†]═╦═[†]"' >> /game/room1/unlock.sh \
- && echo '    castle3="   ╔═════════╗"' >> /game/room1/unlock.sh \
- && echo '    castle4="   ║  ROOM 1 ║"' >> /game/room1/unlock.sh \
- && echo '    castle5="   ║ CLEARED!║"' >> /game/room1/unlock.sh \
- && echo '    castle6="   ╚═════════╝"' >> /game/room1/unlock.sh \
- && echo '    castle7=" ⚔️  ONWARDS! ⚔️ "' >> /game/room1/unlock.sh \
- && echo '    colors=("\033[31m" "\033[33m" "\033[32m" "\033[36m" "\033[35m")' >> /game/room1/unlock.sh \
- && echo '    echo -e "\n🏰 Ancient castle awakening..."' >> /game/room1/unlock.sh \
- && echo '    for i in {1..3}; do' >> /game/room1/unlock.sh \
- && echo '        for color in "${colors[@]}"; do' >> /game/room1/unlock.sh \
- && echo '            clear' >> /game/room1/unlock.sh \
- && echo '            echo -e "\n\n"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle1\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle2\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle3\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle4\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle5\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle6\033[0m"' >> /game/room1/unlock.sh \
- && echo '            echo -e "${color}$castle7\033[0m"' >> /game/room1/unlock.sh \
- && echo '            sleep 0.2' >> /game/room1/unlock.sh \
- && echo '        done' >> /game/room1/unlock.sh \
- && echo '    done' >> /game/room1/unlock.sh \
- && echo '    echo -e "\n✨ Room 2 unlocked! Use the same key to unzip room2.zip\n"' >> /game/room1/unlock.sh \
- && echo 'else' >> /game/room1/unlock.sh \
- && echo '    echo "❌ Incorrect key. Try decoding the message in code.txt"' >> /game/room1/unlock.sh \
- && echo 'fi' >> /game/room1/unlock.sh \
- && chmod +x /game/room1/unlock.sh \
- && echo "Once you find the key, run './unlock.sh'" >> /game/room1/note.txt \
+# LEVEL 1: File System Navigation & Basic Commands
+RUN mkdir -p /game/level1 \
+ && echo "🎓 LINUX EDUCATION GAME - LEVEL 1 🎓" > /game/level1/welcome.txt \
+ && echo "" >> /game/level1/welcome.txt \
+ && echo "Learn Linux fundamentals through hands-on challenges!" >> /game/level1/welcome.txt \
+ && echo "Complete each challenge to earn your certificate." >> /game/level1/welcome.txt \
+ && echo "" >> /game/level1/welcome.txt \
+ && echo "CHALLENGE 1: Navigate and explore" >> /game/level1/welcome.txt \
+ && echo "- Use 'ls' to list files and folders" >> /game/level1/welcome.txt \
+ && echo "- Use 'cd' to change directories" >> /game/level1/welcome.txt \
+ && echo "- Use 'pwd' to see your current location" >> /game/level1/welcome.txt \
+ && echo "" >> /game/level1/welcome.txt \
+ && echo "🎯 GOAL: Find the hidden message in this directory!" >> /game/level1/welcome.txt \
+ && echo "Hint: Try 'ls -la' to see hidden files" >> /game/level1/welcome.txt \
 \
- && mkdir -p /tmp/room2/library \
- && echo "Look deeper, young hacker. Not everything is given freely." > /tmp/room2/clue.txt \
- && for i in $(seq 1 50); do echo "An ancient scroll with illegible text." > /tmp/room2/library/scroll${i}.txt; done \
- && echo "The key is: silver " > /tmp/room2/library/scroll17.txt \
- && echo '#!/bin/bash' > /tmp/room2/verify.sh \
- && echo 'read -p "Enter the key you discovered: " input' >> /tmp/room2/verify.sh \
- && echo 'if [ "$input" = "silver" ]; then' >> /tmp/room2/verify.sh \
- && echo '    clear' >> /tmp/room2/verify.sh \
- && echo '    library1="    📚 ANCIENT LIBRARY 📚"' >> /tmp/room2/verify.sh \
- && echo '    library2="  ╔══════════════════════╗"' >> /tmp/room2/verify.sh \
- && echo '    library3="  ║ 📖KNOWLEDGE GAINED📖  ║"' >> /tmp/room2/verify.sh \
- && echo '    library4="  ║    ROOM 2 CLEARED    ║"' >> /tmp/room2/verify.sh \
- && echo '    library5="  ╚══════════════════════╝"' >> /tmp/room2/verify.sh \
- && echo '    library6="     ✨ MAGIC FLOWS ✨"' >> /tmp/room2/verify.sh \
- && echo '    books=("📗" "📘" "📙" "📕" "📚")' >> /tmp/room2/verify.sh \
- && echo '    magic=("✨" "💫" "⭐" "🌟" "✨")' >> /tmp/room2/verify.sh \
- && echo '    colors=("\033[32m" "\033[36m" "\033[35m" "\033[33m" "\033[34m")' >> /tmp/room2/verify.sh \
- && echo '    echo -e "\n📚 Ancient tomes awakening..."' >> /tmp/room2/verify.sh \
- && echo '    for i in {1..3}; do' >> /tmp/room2/verify.sh \
- && echo '        for ((j=0; j<${#colors[@]}; j++)); do' >> /tmp/room2/verify.sh \
- && echo '            clear' >> /tmp/room2/verify.sh \
- && echo '            echo -e "\n\n"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library1 ${magic[$j]}\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library2\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library3\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library4 ${books[$j]}\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library5\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            echo -e "${colors[$j]}$library6\033[0m"' >> /tmp/room2/verify.sh \
- && echo '            sleep 0.2' >> /tmp/room2/verify.sh \
- && echo '        done' >> /tmp/room2/verify.sh \
- && echo '    done' >> /tmp/room2/verify.sh \
- && echo '    echo -e "\n🗝️  Room 3 unlocked! Use this key to unzip room3.zip\n"' >> /tmp/room2/verify.sh \
- && echo 'else' >> /tmp/room2/verify.sh \
- && echo '    echo "❌ Wrong key. Keep searching the library..."' >> /tmp/room2/verify.sh \
- && echo 'fi' >> /tmp/room2/verify.sh \
- && chmod +x /tmp/room2/verify.sh \
- && echo "When you find the key, run './verify.sh'" >> /tmp/room2/clue.txt \
- && cd /tmp && zip -r -P bronze /game/room2.zip room2 \
- && rm -rf /tmp/room2
+ && echo "Q29uZ3JhdHVsYXRpb25zISBZb3UgZm91bmQgdGhlIGhpZGRlbiBmaWxlIQpZb3VyIExldmVsIDEga2V5IGlzOiBuYXZpZ2F0b3IK" > /game/level1/.hidden_clue \
+ && echo '#!/bin/bash' > /game/level1/check_level1.sh \
+ && echo 'echo "🔍 LEVEL 1 PROGRESS CHECKER"' >> /game/level1/check_level1.sh \
+ && echo 'echo "=========================="' >> /game/level1/check_level1.sh \
+ && echo 'echo ""' >> /game/level1/check_level1.sh \
+ && echo 'read -p "Did you find the hidden file? Enter the key you discovered: " input' >> /game/level1/check_level1.sh \
+ && echo 'if [ "$input" = "navigator" ]; then' >> /game/level1/check_level1.sh \
+ && echo '    echo ""' >> /game/level1/check_level1.sh \
+ && echo '    echo "🎉 LEVEL 1 COMPLETED! 🎉"' >> /game/level1/check_level1.sh \
+ && echo '    echo "Skills learned: ls, cd, pwd, hidden files"' >> /game/level1/check_level1.sh \
+ && echo '    echo ""' >> /game/level1/check_level1.sh \
+ && echo '    echo "🔓 Level 2 unlocked! Password: navigator"' >> /game/level1/check_level1.sh \
+ && echo '    echo "Extract level2.zip using: unzip -P navigator level2.zip"' >> /game/level1/check_level1.sh \
+ && echo 'else' >> /game/level1/check_level1.sh \
+ && echo '    echo "❌ Not quite right. Keep exploring!"' >> /game/level1/check_level1.sh \
+ && echo '    echo "Hint: Use '\''cat .hidden_clue | base64 -d'\'' if you found the file"' >> /game/level1/check_level1.sh \
+ && echo 'fi' >> /game/level1/check_level1.sh \
+ && chmod +x /game/level1/check_level1.sh
 
-# Room 3 – VIM Editing Required to Unlock Room 4
-RUN mkdir -p /tmp/room3 \
- && echo "OPEN=false" > /tmp/room3/config.txt \
- && echo "# Change OPEN to true to proceed." >> /tmp/room3/config.txt \
- && echo "# (Hint: use vim to edit this file)" >> /tmp/room3/config.txt \
- && echo '#!/bin/bash' > /tmp/room3/unlock.sh \
- && echo 'source config.txt' >> /tmp/room3/unlock.sh \
- && echo 'if [ "$OPEN" = "true" ]; then' >> /tmp/room3/unlock.sh \
- && echo '    frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")' >> /tmp/room3/unlock.sh \
- && echo '    echo -n "Opening the gate "' >> /tmp/room3/unlock.sh \
- && echo '    for i in {1..10}; do' >> /tmp/room3/unlock.sh \
- && echo '        for frame in "${frames[@]}"; do' >> /tmp/room3/unlock.sh \
- && echo '            echo -ne "\r\033[KOpening the gate $frame"' >> /tmp/room3/unlock.sh \
- && echo '            sleep 0.1' >> /tmp/room3/unlock.sh \
- && echo '        done' >> /tmp/room3/unlock.sh \
- && echo '    done' >> /tmp/room3/unlock.sh \
- && echo '    echo -e "\n\n🎉 Gate unlocked! The key is: gold\n"' >> /tmp/room3/unlock.sh \
- && echo 'else' >> /tmp/room3/unlock.sh \
- && echo '    echo "❌ The gate remains shut..."' >> /tmp/room3/unlock.sh \
- && echo 'fi' >> /tmp/room3/unlock.sh \
- && chmod +x /tmp/room3/unlock.sh \
- && echo "Once you've edited config.txt, run './unlock.sh'." > /tmp/room3/README.txt \
- && cd /tmp && zip -r -P silver /game/room3.zip room3 \
- && rm -rf /tmp/room3
+# LEVEL 2: File Creation and Text Manipulation
+RUN mkdir -p /tmp/level2/workspace \
+ && echo "📝 LEVEL 2: File Operations & Text Skills" > /tmp/level2/instructions.txt \
+ && echo "============================================" >> /tmp/level2/instructions.txt \
+ && echo "" >> /tmp/level2/instructions.txt \
+ && echo "CHALLENGES:" >> /tmp/level2/instructions.txt \
+ && echo "1. Create a file called 'my_notes.txt'" >> /tmp/level2/instructions.txt \
+ && echo "2. Write your name in the file using echo" >> /tmp/level2/instructions.txt \
+ && echo "3. Create a directory called 'projects'" >> /tmp/level2/instructions.txt \
+ && echo "4. Copy my_notes.txt into the projects folder" >> /tmp/level2/instructions.txt \
+ && echo "5. Find the secret word hidden in secret_data.txt" >> /tmp/level2/instructions.txt \
+ && echo "" >> /tmp/level2/instructions.txt \
+ && echo "Commands to learn: touch, echo, mkdir, cp, grep, cat" >> /tmp/level2/instructions.txt \
+\
+ && echo "The secret word is: creator" > /tmp/level2/secret_data.txt \
+ && echo "This line contains no secrets" >> /tmp/level2/secret_data.txt \
+ && echo "Random text here" >> /tmp/level2/secret_data.txt \
+ && echo "Another line without secrets" >> /tmp/level2/secret_data.txt \
+ && echo "More random content" >> /tmp/level2/secret_data.txt \
+\
+ && echo '#!/bin/bash' > /tmp/level2/validate.sh \
+ && echo 'echo "🔍 LEVEL 2 VALIDATION"' >> /tmp/level2/validate.sh \
+ && echo 'echo "===================="' >> /tmp/level2/validate.sh \
+ && echo 'score=0' >> /tmp/level2/validate.sh \
+ && echo 'echo ""' >> /tmp/level2/validate.sh \
+ && echo 'if [ -f "my_notes.txt" ]; then' >> /tmp/level2/validate.sh \
+ && echo '    echo "✅ File my_notes.txt created (+1 point)"' >> /tmp/level2/validate.sh \
+ && echo '    ((score++))" \
+ && echo 'else' >> /tmp/level2/validate.sh \
+ && echo '    echo "❌ File my_notes.txt not found"' >> /tmp/level2/validate.sh \
+ && echo 'fi' >> /tmp/level2/validate.sh \
+ && echo 'if [ -d "projects" ]; then' >> /tmp/level2/validate.sh \
+ && echo '    echo "✅ Directory projects created (+1 point)"' >> /tmp/level2/validate.sh \
+ && echo '    ((score++))' >> /tmp/level2/validate.sh \
+ && echo 'else' >> /tmp/level2/validate.sh \
+ && echo '    echo "❌ Directory projects not found"' >> /tmp/level2/validate.sh \
+ && echo 'fi' >> /tmp/level2/validate.sh \
+ && echo 'if [ -f "projects/my_notes.txt" ]; then' >> /tmp/level2/validate.sh \
+ && echo '    echo "✅ File copied to projects (+1 point)"' >> /tmp/level2/validate.sh \
+ && echo '    ((score++))' >> /tmp/level2/validate.sh \
+ && echo 'else' >> /tmp/level2/validate.sh \
+ && echo '    echo "❌ File not copied to projects directory"' >> /tmp/level2/validate.sh \
+ && echo 'fi' >> /tmp/level2/validate.sh \
+ && echo 'echo ""' >> /tmp/level2/validate.sh \
+ && echo 'read -p "What secret word did you find? " secret' >> /tmp/level2/validate.sh \
+ && echo 'if [ "$secret" = "creator" ]; then' >> /tmp/level2/validate.sh \
+ && echo '    echo "✅ Secret word found! (+2 points)"' >> /tmp/level2/validate.sh \
+ && echo '    ((score+=2))' >> /tmp/level2/validate.sh \
+ && echo 'else' >> /tmp/level2/validate.sh \
+ && echo '    echo "❌ Wrong secret word. Try: grep '\''secret'\'' secret_data.txt"' >> /tmp/level2/validate.sh \
+ && echo 'fi' >> /tmp/level2/validate.sh \
+ && echo 'echo ""' >> /tmp/level2/validate.sh \
+ && echo 'echo "📊 SCORE: $score/5"' >> /tmp/level2/validate.sh \
+ && echo 'if [ $score -eq 5 ]; then' >> /tmp/level2/validate.sh \
+ && echo '    echo ""' >> /tmp/level2/validate.sh \
+ && echo '    echo "🎉 LEVEL 2 COMPLETED! 🎉"' >> /tmp/level2/validate.sh \
+ && echo '    echo "You'\''ve mastered file operations!"' >> /tmp/level2/validate.sh \
+ && echo '    echo ""' >> /tmp/level2/validate.sh \
+ && echo '    echo "🔓 Level 3 unlocked! Password: creator"' >> /tmp/level2/validate.sh \
+ && echo 'else' >> /tmp/level2/validate.sh \
+ && echo '    echo ""' >> /tmp/level2/validate.sh \
+ && echo '    echo "Keep practicing! Complete all tasks to proceed."' >> /tmp/level2/validate.sh \
+ && echo 'fi' >> /tmp/level2/validate.sh \
+ && chmod +x /tmp/level2/validate.sh \
+ && cd /tmp && zip -r -P navigator /game/level2.zip level2 \
+ && rm -rf /tmp/level2
 
+# LEVEL 3: Text Processing and Search
+RUN mkdir -p /tmp/level3/data \
+ && echo "🔍 LEVEL 3: Text Processing & Search Mastery" > /tmp/level3/mission.txt \
+ && echo "=============================================" >> /tmp/level3/mission.txt \
+ && echo "" >> /tmp/level3/mission.txt \
+ && echo "SCENARIO: You're a data analyst investigating log files!" >> /tmp/level3/mission.txt \
+ && echo "" >> /tmp/level3/mission.txt \
+ && echo "TASKS:" >> /tmp/level3/mission.txt \
+ && echo "1. Find all ERROR messages in system.log" >> /tmp/level3/mission.txt \
+ && echo "2. Count how many WARNING messages exist" >> /tmp/level3/mission.txt \
+ && echo "3. Extract unique IP addresses from access.log" >> /tmp/level3/mission.txt \
+ && echo "4. Find the most frequent user in the logs" >> /tmp/level3/mission.txt \
+ && echo "" >> /tmp/level3/mission.txt \
+ && echo "Commands to master: grep, wc, sort, uniq, cut, awk" >> /tmp/level3/mission.txt \
+\
+ && echo "2024-01-15 10:30:15 INFO User login successful" > /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:31:22 ERROR Database connection failed" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:32:10 WARNING Disk space low" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:33:45 INFO Processing request" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:34:12 ERROR Authentication failed" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:35:33 WARNING Memory usage high" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:36:21 ERROR Service unavailable" >> /tmp/level3/data/system.log \
+ && echo "2024-01-15 10:37:18 INFO Task completed" >> /tmp/level3/data/system.log \
+\
+ && echo "192.168.1.100 alice GET /home" > /tmp/level3/data/access.log \
+ && echo "192.168.1.101 bob POST /login" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.100 alice GET /profile" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.102 charlie GET /home" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.100 alice POST /update" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.101 bob GET /dashboard" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.103 diana GET /home" >> /tmp/level3/data/access.log \
+ && echo "192.168.1.100 alice GET /settings" >> /tmp/level3/data/access.log \
+\
+ && echo '#!/bin/bash' > /tmp/level3/analyze.sh \
+ && echo 'echo "🕵️ DATA ANALYSIS CHALLENGE"' >> /tmp/level3/analyze.sh \
+ && echo 'echo "=========================="' >> /tmp/level3/analyze.sh \
+ && echo 'echo ""' >> /tmp/level3/analyze.sh \
+ && echo 'echo "Let'\''s test your text processing skills!"' >> /tmp/level3/analyze.sh \
+ && echo 'echo ""' >> /tmp/level3/analyze.sh \
+ && echo 'read -p "How many ERROR messages are in system.log? " errors' >> /tmp/level3/analyze.sh \
+ && echo 'read -p "How many WARNING messages are in system.log? " warnings' >> /tmp/level3/analyze.sh \
+ && echo 'read -p "Which user appears most frequently in access.log? " user' >> /tmp/level3/analyze.sh \
+ && echo 'echo ""' >> /tmp/level3/analyze.sh \
+ && echo 'score=0' >> /tmp/level3/analyze.sh \
+ && echo 'if [ "$errors" = "3" ]; then' >> /tmp/level3/analyze.sh \
+ && echo '    echo "✅ Correct! Found 3 ERROR messages (+1 point)"' >> /tmp/level3/analyze.sh \
+ && echo '    ((score++))' >> /tmp/level3/analyze.sh \
+ && echo 'else' >> /tmp/level3/analyze.sh \
+ && echo '    echo "❌ Wrong count. Try: grep ERROR data/system.log | wc -l"' >> /tmp/level3/analyze.sh \
+ && echo 'fi' >> /tmp/level3/analyze.sh \
+ && echo 'if [ "$warnings" = "2" ]; then' >> /tmp/level3/analyze.sh \
+ && echo '    echo "✅ Correct! Found 2 WARNING messages (+1 point)"' >> /tmp/level3/analyze.sh \
+ && echo '    ((score++))' >> /tmp/level3/analyze.sh \
+ && echo 'else' >> /tmp/level3/analyze.sh \
+ && echo '    echo "❌ Wrong count. Try: grep WARNING data/system.log | wc -l"' >> /tmp/level3/analyze.sh \
+ && echo 'fi' >> /tmp/level3/analyze.sh \
+ && echo 'if [ "$user" = "alice" ]; then' >> /tmp/level3/analyze.sh \
+ && echo '    echo "✅ Correct! Alice appears most frequently (+2 points)"' >> /tmp/level3/analyze.sh \
+ && echo '    ((score+=2))' >> /tmp/level3/analyze.sh \
+ && echo 'else' >> /tmp/level3/analyze.sh \
+ && echo '    echo "❌ Wrong user. Try: cut -d'\'' '\'' -f2 data/access.log | sort | uniq -c | sort -nr"' >> /tmp/level3/analyze.sh \
+ && echo 'fi' >> /tmp/level3/analyze.sh \
+ && echo 'echo ""' >> /tmp/level3/analyze.sh \
+ && echo 'echo "📊 FINAL SCORE: $score/4"' >> /tmp/level3/analyze.sh \
+ && echo 'if [ $score -eq 4 ]; then' >> /tmp/level3/analyze.sh \
+ && echo '    echo ""' >> /tmp/level3/analyze.sh \
+ && echo '    echo "🎉 LEVEL 3 COMPLETED! 🎉"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "You'\''re now a text processing expert!"' >> /tmp/level3/analyze.sh \
+ && echo '    echo ""' >> /tmp/level3/analyze.sh \
+ && echo '    echo "🏆 CONGRATULATIONS! 🏆"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "You have completed the Linux Fundamentals Course!"' >> /tmp/level3/analyze.sh \
+ && echo '    echo ""' >> /tmp/level3/analyze.sh \
+ && echo '    echo "═══════════════════════════════════════"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│        CERTIFICATE OF COMPLETION       │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│                                         │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│       Linux Command Line Basics        │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│                                         │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│  ✓ File System Navigation              │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│  ✓ File Operations & Creation          │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│  ✓ Text Processing & Search            │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│                                         │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "│       Completed: $(date +%Y-%m-%d)           │"' >> /tmp/level3/analyze.sh \
+ && echo '    echo "═══════════════════════════════════════"' >> /tmp/level3/analyze.sh \
+ && echo 'else' >> /tmp/level3/analyze.sh \
+ && echo '    echo ""' >> /tmp/level3/analyze.sh \
+ && echo '    echo "Keep practicing! Review the hints above."' >> /tmp/level3/analyze.sh \
+ && echo 'fi' >> /tmp/level3/analyze.sh \
+ && chmod +x /tmp/level3/analyze.sh \
+ && cd /tmp && zip -r -P creator /game/level3.zip level3 \
+ && rm -rf /tmp/level3
 
-# Room 4 - Advanced Cipher Puzzle
-RUN mkdir -p /tmp/room4 \
- && echo '#!/bin/bash' > /tmp/room4/cipher.sh \
- && echo 'part1="VGhlIGZpcnN0IHBhcnQgaXMgcGxhCg=="' >> /tmp/room4/cipher.sh \
- && echo 'part2="VGhlIHNlY29uZCBwYXJ0IGlzIHRpbgo="' >> /tmp/room4/cipher.sh \
- && echo 'part3="VGhlIGZpbmFsIHBhcnQgaXMgdW0K"' >> /tmp/room4/cipher.sh \
- && echo 'echo "🔮 Welcome to the Cryptomancer'\''s Challenge!"' >> /tmp/room4/cipher.sh \
- && echo 'echo "Three mystical phrases await your decoding skills..."' >> /tmp/room4/cipher.sh \
- && echo 'echo -e "\n1) $part1"' >> /tmp/room4/cipher.sh \
- && echo 'echo "2) $part2"' >> /tmp/room4/cipher.sh \
- && echo 'echo "3) $part3"' >> /tmp/room4/cipher.sh \
- && echo 'echo -e "\nYou can decode them one by one using: echo <phrase> | base64 -d"' >> /tmp/room4/cipher.sh \
- && echo 'echo "Or try to decode them all at once by combining the parts..."' >> /tmp/room4/cipher.sh \
- && echo 'read -p "Once you have found the key, enter it here: " input' >> /tmp/room4/cipher.sh \
- && echo 'if [ "$input" = "platinum" ]; then' >> /tmp/room4/cipher.sh \
- && echo '    clear' >> /tmp/room4/cipher.sh \
- && echo '    cipher1=" 🔮 CRYPTOMANCER'\''S CHAMBER 🔮"' >> /tmp/room4/cipher.sh \
- && echo '    cipher2="  ╭──────────────────────────╮"' >> /tmp/room4/cipher.sh \
- && echo '    cipher3="  │   ANCIENT CODES BROKEN   │"' >> /tmp/room4/cipher.sh \
- && echo '    cipher4="  │     ROOM 4 CLEARED       │"' >> /tmp/room4/cipher.sh \
- && echo '    cipher5="  ╰──────────────────────────╯"' >> /tmp/room4/cipher.sh \
- && echo '    cipher6="      🌌 MAGIC SURGES 🌌"' >> /tmp/room4/cipher.sh \
- && echo '    symbols=("⚡" "🌟" "✨" "💫" "🌠" "⭐")' >> /tmp/room4/cipher.sh \
- && echo '    colors=("\033[35m" "\033[36m" "\033[34m" "\033[33m" "\033[32m" "\033[31m")' >> /tmp/room4/cipher.sh \
- && echo '    echo -e "\n🔮 Ancient magic resonating..."' >> /tmp/room4/cipher.sh \
- && echo '    for i in {1..3}; do' >> /tmp/room4/cipher.sh \
- && echo '        for ((j=0; j<${#colors[@]}; j++)); do' >> /tmp/room4/cipher.sh \
- && echo '            clear' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "\n\n"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher1 ${symbols[$j]}\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher2\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher3 ${symbols[$(((j+1)%6))]}\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher4 ${symbols[$(((j+2)%6))]}\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher5\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            echo -e "${colors[$j]}$cipher6 ${symbols[$(((j+3)%6))]}\033[0m"' >> /tmp/room4/cipher.sh \
- && echo '            sleep 0.2' >> /tmp/room4/cipher.sh \
- && echo '        done' >> /tmp/room4/cipher.sh \
- && echo '    done' >> /tmp/room4/cipher.sh \
- && echo '    echo -e "\n🗝️  Final chamber awaits! Use this key to unzip room5.zip\n"' >> /tmp/room4/cipher.sh \
- && echo 'else' >> /tmp/room4/cipher.sh \
- && echo '    echo "❌ Incorrect key. The ancient codes remain unbroken..."' >> /tmp/room4/cipher.sh \
- && echo 'fi' >> /tmp/room4/cipher.sh \
- && chmod +x /tmp/room4/cipher.sh \
- && echo "A mysterious script lies before you (cipher.sh)." > /tmp/room4/README.txt \
- && echo "The Cryptomancer has hidden their secrets in base64 encoded messages." >> /tmp/room4/README.txt \
- && echo "Decode all three parts to reveal the true key." >> /tmp/room4/README.txt \
- && echo 'echo "To make the variables available, run: source ./cipher.sh"' >> /tmp/room4/README.txt \
- && cd /tmp && zip -r -P gold /game/room4.zip room4 \
- && rm -rf /tmp/room4
+# Copy all starting files to student's home
+RUN cp -r /game/level1 /home/student/ \
+ && cp /game/level2.zip /home/student/ \
+ && cp /game/level3.zip /home/student/ \
+ && chown -R student:student /home/student
 
-RUN mkdir -p /tmp/room5 \
- && echo "Use 'strings dragon' to reveal the key." > /tmp/room5/instructions.txt \
- && dd if=/dev/urandom bs=1 count=100 of=/tmp/room5/dragon 2>/dev/null \
- && echo 'diamond' >> /tmp/room5/dragon \
- && echo '#!/bin/bash' > /tmp/room5/complete.sh \
- && echo 'read -p "Enter the final key: " input' >> /tmp/room5/complete.sh \
- && echo 'if [ "$input" = "diamond" ]; then' >> /tmp/room5/complete.sh \
- && echo '    clear' >> /tmp/room5/complete.sh \
- && echo '    dragon1="           ___====-_  _-====___"' >> /tmp/room5/complete.sh \
- && echo '    dragon2="           _--^^^#####//      \#####^^^--_"' >> /tmp/room5/complete.sh \
- && echo '    dragon3="        _-^##########// \\(    \\) \\##########^-_"' >> /tmp/room5/complete.sh \
- && echo '    dragon4="       -############//  |\\\\^^/|  \\\\############-"' >> /tmp/room5/complete.sh \
- && echo '    dragon5="     _/############//   (@::@)   \\\\############\\\\_"' >> /tmp/room5/complete.sh \
- && echo '    dragon6="    /#############\\\\((     \\\\//     ))#############\\\\"' >> /tmp/room5/complete.sh \
- && echo '    dragon7="   -###############\\\\    \\\\(oo\\\\)    //###############-"' >> /tmp/room5/complete.sh \
- && echo '    dragon8="  -#################\\\\  / VV \\\\  //#################-"' >> /tmp/room5/complete.sh \
- && echo '    dragon9=" -###################\\\\/      \\\\//###################-"' >> /tmp/room5/complete.sh \
- && echo '    dragon10="_#/|##########/\\\\######\\\\(   /\\\\   \\\\)######/\\\\##########|\\\\#_"' >> /tmp/room5/complete.sh \
- && echo '    dragon11="|/ |#/\\\\#/\\\\#/\\\\/  \\\\#/\\\\##\\\\  |  |  /##/\\\\#/  \\\\/\\\\#/\\\\#/\\\\#| \\\\|"' >> /tmp/room5/complete.sh \
- && echo '    dragon12="`  |/  V  V  `   V  \\\\#\\\\| |  | |/#/  V   '\''  V  V  \\\\|  '\''"' >> /tmp/room5/complete.sh \
- && echo '    dragon13="   `   `  `      `   / | |  | | \\\\   '\''      '\''  '\''   '\''"' >> /tmp/room5/complete.sh \
- && echo '    dragon14="                    \\\\(  | |  | |  \\\\)"' >> /tmp/room5/complete.sh \
- && echo '    dragon15="                   __\\\\ | |  | | /__"' >> /tmp/room5/complete.sh \
- && echo '    dragon16="                  \\\\(vvv\\\\(VVV\\\\)\\(VVV\\\\)vvv\\\\)"' >> /tmp/room5/complete.sh \
- && echo '    colors=("\033[31m" "\033[33m" "\033[32m" "\033[36m" "\033[35m")' >> /tmp/room5/complete.sh \
- && echo '    echo -e "\n🐉 The dragon awakens..."' >> /tmp/room5/complete.sh \
- && echo '    for i in {1..3}; do' >> /tmp/room5/complete.sh \
- && echo '        for color in "${colors[@]}"; do' >> /tmp/room5/complete.sh \
- && echo '            clear' >> /tmp/room5/complete.sh \
- && echo '            echo -e "\n\n"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon1}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon2}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon3}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon4}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon5}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon6}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon7}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon8}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon9}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon10}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon11}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon12}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon13}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon14}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon15}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            echo -e "${color}${dragon16}\033[0m"' >> /tmp/room5/complete.sh \
- && echo '            sleep 0.2' >> /tmp/room5/complete.sh \
- && echo '        done' >> /tmp/room5/complete.sh \
- && echo '    done' >> /tmp/room5/complete.sh \
- && echo '    echo -e "\n\n🎉 CONGRATULATIONS 🎉"' >> /tmp/room5/complete.sh \
- && echo '    echo "You have defeated the dragon and completed the Linux Dungeon Game!"' >> /tmp/room5/complete.sh \
- && echo '    echo ""' >> /tmp/room5/complete.sh \
- && echo '    echo "================== CERTIFICATE =============="' >> /tmp/room5/complete.sh \
- && echo '    echo "|                                           |"' >> /tmp/room5/complete.sh \
- && echo '    echo "|        Certified Terminal Adventurer      |"' >> /tmp/room5/complete.sh \
- && echo '    echo "|         Conqueror of the Dungeon CLI      |"' >> /tmp/room5/complete.sh \
- && echo '    echo "|                 by JFOXUK                 |"' >> /tmp/room5/complete.sh \
- && echo '    echo "|___________________________________________|"' >> /tmp/room5/complete.sh \
- && echo 'else' >> /tmp/room5/complete.sh \
- && echo '    echo "❌ Wrong key. The dragon still lives..."' >> /tmp/room5/complete.sh \
- && echo 'fi' >> /tmp/room5/complete.sh \
- && chmod +x /tmp/room5/complete.sh \
- && cd /tmp && zip -r -P platinum /game/room5.zip room5 \
- && rm -rf /tmp/room5
-
-# Copy all starting files to user's home
-RUN cp -r /game/room1 /home/user/ \
- && cp /game/room2.zip /home/user/ \
- && cp /game/room3.zip /home/user/ \
- && cp /game/room4.zip /home/user/ \
- && cp /game/room5.zip /home/user/ \
- && chown -R user:user /home/user
+# Create welcome script that runs on startup
+RUN echo '#!/bin/bash' > /home/student/start_learning.sh \
+ && echo 'clear' >> /home/student/start_learning.sh \
+ && echo 'echo "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"' >> /home/student/start_learning.sh \
+ && echo 'echo "=================================================="' >> /home/student/start_learning.sh \
+ && echo 'echo ""' >> /home/student/start_learning.sh \
+ && echo 'echo "This interactive course will teach you:"' >> /home/student/start_learning.sh \
+ && echo 'echo "• File system navigation (ls, cd, pwd)"' >> /home/student/start_learning.sh \
+ && echo 'echo "• File operations (touch, cp, mv, rm)"' >> /home/student/start_learning.sh \
+ && echo 'echo "• Text processing (grep, cut, sort, uniq)"' >> /home/student/start_learning.sh \
+ && echo 'echo ""' >> /home/student/start_learning.sh \
+ && echo 'echo "📂 Start with: cd level1 && cat welcome.txt"' >> /home/student/start_learning.sh \
+ && echo 'echo ""' >> /home/student/start_learning.sh \
+ && echo 'echo "💡 Helpful commands:"' >> /home/student/start_learning.sh \
+ && echo 'echo "   help     - Show this message"' >> /home/student/start_learning.sh \
+ && echo 'echo "   ls       - List files and folders"' >> /home/student/start_learning.sh \
+ && echo 'echo "   cd       - Change directory"' >> /home/student/start_learning.sh \
+ && echo 'echo "   cat      - Display file contents"' >> /home/student/start_learning.sh \
+ && echo 'echo ""' >> /home/student/start_learning.sh \
+ && chmod +x /home/student/start_learning.sh \
+ && echo 'alias help="/home/student/start_learning.sh"' >> /home/student/.bashrc \
+ && echo '/home/student/start_learning.sh' >> /home/student/.bashrc
 
 # Set working directory and environment variables
-WORKDIR /home/user
-ENV HOME="/home/user" TERM="xterm" USER="user" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
+WORKDIR /home/student
+ENV HOME="/home/student" TERM="xterm" USER="student" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
 
 # Start bash in login mode for WebVM
 CMD ["/bin/bash", "-l"]
