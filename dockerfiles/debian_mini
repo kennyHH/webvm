@@ -22,44 +22,14 @@ RUN mkdir -p /home/student/documents && chown -R student:student /home/student/d
 # LEVEL 1: File System Navigation & Basic Commands
 RUN mkdir -p /game/level1
 
-# Create Level 1 welcome file
-RUN cat > /game/level1/welcome.txt << 'EOL'
-🎓 LINUX EDUCATION GAME - LEVEL 1 🎓
-
-Learn Linux fundamentals through hands-on challenges!
-Complete each challenge to earn your certificate.
-
-CHALLENGE 1: Navigate and explore
-- Use 'ls' to list files and folders
-- Use 'cd' to change directories  
-- Use 'pwd' to see your current location
-
-🎯 GOAL: Find the hidden message in this directory!
-Hint: Try 'ls -la' to see hidden files
-EOL
+# Create Level 1 welcome file using printf (more reliable than heredoc in Docker)
+RUN printf "🎓 LINUX EDUCATION GAME - LEVEL 1 🎓\n\nLearn Linux fundamentals through hands-on challenges!\nComplete each challenge to earn your certificate.\n\nCHALLENGE 1: Navigate and explore\n- Use 'ls' to list files and folders\n- Use 'cd' to change directories\n- Use 'pwd' to see your current location\n\n🎯 GOAL: Find the hidden message in this directory!\nHint: Try 'ls -la' to see hidden files\n" > /game/level1/welcome.txt
 
 # Create hidden clue file
 RUN echo "Q29uZ3JhdHVsYXRpb25zISBZb3UgZm91bmQgdGhlIGhpZGRlbiBmaWxlIQpZb3VyIExldmVsIDEga2V5IGlzOiBuYXZpZ2F0b3IK" > /game/level1/.hidden_clue
 
 # Create Level 1 checker script
-RUN cat > /game/level1/check_level1.sh << 'EOL'
-#!/bin/bash
-echo "🔍 LEVEL 1 PROGRESS CHECKER"
-echo "=========================="
-echo ""
-read -p "Did you find the hidden file? Enter the key you discovered: " input
-if [ "$input" = "navigator" ]; then
-    echo ""
-    echo "🎉 LEVEL 1 COMPLETED! 🎉"
-    echo "Skills learned: ls, cd, pwd, hidden files"
-    echo ""
-    echo "🔓 Level 2 unlocked! Password: navigator"
-    echo "Extract level2.zip using: unzip -P navigator level2.zip"
-else
-    echo "❌ Not quite right. Keep exploring!"
-    echo "Hint: Use 'cat .hidden_clue | base64 -d' if you found the file"
-fi
-EOL
+RUN printf '#!/bin/bash\necho "🔍 LEVEL 1 PROGRESS CHECKER"\necho "=========================="\necho ""\nread -p "Did you find the hidden file? Enter the key you discovered: " input\nif [ "$input" = "navigator" ]; then\n    echo ""\n    echo "🎉 LEVEL 1 COMPLETED! 🎉"\n    echo "Skills learned: ls, cd, pwd, hidden files"\n    echo ""\n    echo "🔓 Level 2 unlocked! Password: navigator"\n    echo "Extract level2.zip using: unzip -P navigator level2.zip"\nelse\n    echo "❌ Not quite right. Keep exploring!"\n    echo "Hint: Use '"'"'cat .hidden_clue | base64 -d'"'"' if you found the file"\nfi\n' > /game/level1/check_level1.sh
 
 RUN chmod +x /game/level1/check_level1.sh
 
@@ -67,82 +37,13 @@ RUN chmod +x /game/level1/check_level1.sh
 RUN mkdir -p /tmp/level2/workspace
 
 # Create Level 2 instructions
-RUN cat > /tmp/level2/instructions.txt << 'EOL'
-📝 LEVEL 2: File Operations & Text Skills
-============================================
-
-CHALLENGES:
-1. Create a file called 'my_notes.txt'
-2. Write your name in the file using echo
-3. Create a directory called 'projects'
-4. Copy my_notes.txt into the projects folder
-5. Find the secret word hidden in secret_data.txt
-
-Commands to learn: touch, echo, mkdir, cp, grep, cat
-EOL
+RUN printf "📝 LEVEL 2: File Operations & Text Skills\n============================================\n\nCHALLENGES:\n1. Create a file called 'my_notes.txt'\n2. Write your name in the file using echo\n3. Create a directory called 'projects'\n4. Copy my_notes.txt into the projects folder\n5. Find the secret word hidden in secret_data.txt\n\nCommands to learn: touch, echo, mkdir, cp, grep, cat\n" > /tmp/level2/instructions.txt
 
 # Create secret data file
-RUN cat > /tmp/level2/secret_data.txt << 'EOL'
-The secret word is: creator
-This line contains no secrets
-Random text here
-Another line without secrets
-More random content
-EOL
+RUN printf "The secret word is: creator\nThis line contains no secrets\nRandom text here\nAnother line without secrets\nMore random content\n" > /tmp/level2/secret_data.txt
 
 # Create Level 2 validation script
-RUN cat > /tmp/level2/validate.sh << 'EOL'
-#!/bin/bash
-echo "🔍 LEVEL 2 VALIDATION"
-echo "===================="
-score=0
-echo ""
-
-if [ -f "my_notes.txt" ]; then
-    echo "✅ File my_notes.txt created (+1 point)"
-    ((score++))
-else
-    echo "❌ File my_notes.txt not found"ERROR: failed to build: failed to solve: process "/bin/sh -c mkdir -p /tmp/level2/workspace  && echo \"📝 LEVEL 2: File Operations & Text Skills\" > /tmp/level2/instructions.txt  && echo \"============================================\" >> /tmp/level2/instructions.txt  && echo \"\" >> /tmp/level2/instructions.txt  && echo \"CHALLENGES:\" >> /tmp/level2/instructions.txt  && echo \"1. Create a file called 'my_notes.txt'\" >> /tmp/level2/instructions.txt  && echo \"2. Write your name in the file using echo\" >> /tmp/level2/instructions.txt  && echo \"3. Create a directory called 'projects'\" >> /tmp/level2/instructions.txt  && echo \"4. Copy my_notes.txt into the projects folder\" >> /tmp/level2/instructions.txt  && echo \"5. Find the secret word hidden in secret_data.txt\" >> /tmp/level2/instructions.txt  && echo \"\" >> /tmp/level2/instructions.txt  && echo \"Commands to learn: touch, echo, mkdir, cp, grep, cat\" >> /tmp/level2/instructions.txt  && echo \"The secret word is: creator\" > /tmp/level2/secret_data..
-Error: Process completed with exit code 1.
-fi
-
-if [ -d "projects" ]; then
-    echo "✅ Directory projects created (+1 point)"
-    ((score++))
-else
-    echo "❌ Directory projects not found"
-fi
-
-if [ -f "projects/my_notes.txt" ]; then
-    echo "✅ File copied to projects (+1 point)"
-    ((score++))
-else
-    echo "❌ File not copied to projects directory"
-fi
-
-echo ""
-read -p "What secret word did you find? " secret
-if [ "$secret" = "creator" ]; then
-    echo "✅ Secret word found! (+2 points)"
-    ((score+=2))
-else
-    echo "❌ Wrong secret word. Try: grep 'secret' secret_data.txt"
-fi
-
-echo ""
-echo "📊 SCORE: $score/5"
-
-if [ $score -eq 5 ]; then
-    echo ""
-    echo "🎉 LEVEL 2 COMPLETED! 🎉"
-    echo "You've mastered file operations!"
-    echo ""
-    echo "🔓 Level 3 unlocked! Password: creator"
-else
-    echo ""
-    echo "Keep practicing! Complete all tasks to proceed."
-fi
-EOL
+RUN printf '#!/bin/bash\necho "🔍 LEVEL 2 VALIDATION"\necho "===================="\nscore=0\necho ""\n\nif [ -f "my_notes.txt" ]; then\n    echo "✅ File my_notes.txt created (+1 point)"\n    ((score++))\nelse\n    echo "❌ File my_notes.txt not found"\nfi\n\nif [ -d "projects" ]; then\n    echo "✅ Directory projects created (+1 point)"\n    ((score++))\nelse\n    echo "❌ Directory projects not found"\nfi\n\nif [ -f "projects/my_notes.txt" ]; then\n    echo "✅ File copied to projects (+1 point)"\n    ((score++))\nelse\n    echo "❌ File not copied to projects directory"\nfi\n\necho ""\nread -p "What secret word did you find? " secret\nif [ "$secret" = "creator" ]; then\n    echo "✅ Secret word found! (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Wrong secret word. Try: grep '"'"'secret'"'"' secret_data.txt"\nfi\n\necho ""\necho "📊 SCORE: $score/5"\n\nif [ $score -eq 5 ]; then\n    echo ""\n    echo "🎉 LEVEL 2 COMPLETED! 🎉"\n    echo "You'"'"'ve mastered file operations!"\n    echo ""\n    echo "🔓 Level 3 unlocked! Password: creator"\nelse\n    echo ""\n    echo "Keep practicing! Complete all tasks to proceed."\nfi\n' > /tmp/level2/validate.sh
 
 RUN chmod +x /tmp/level2/validate.sh
 
@@ -153,109 +54,16 @@ RUN cd /tmp && zip -r -P navigator /game/level2.zip level2 && rm -rf /tmp/level2
 RUN mkdir -p /tmp/level3/data
 
 # Create Level 3 mission file
-RUN cat > /tmp/level3/mission.txt << 'EOL'
-🔍 LEVEL 3: Text Processing & Search Mastery
-=============================================
-
-SCENARIO: You're a data analyst investigating log files!
-
-TASKS:
-1. Find all ERROR messages in system.log
-2. Count how many WARNING messages exist
-3. Extract unique IP addresses from access.log
-4. Find the most frequent user in the logs
-
-Commands to master: grep, wc, sort, uniq, cut, awk
-EOL
+RUN printf "🔍 LEVEL 3: Text Processing & Search Mastery\n=============================================\n\nSCENARIO: You're a data analyst investigating log files!\n\nTASKS:\n1. Find all ERROR messages in system.log\n2. Count how many WARNING messages exist\n3. Extract unique IP addresses from access.log\n4. Find the most frequent user in the logs\n\nCommands to master: grep, wc, sort, uniq, cut, awk\n" > /tmp/level3/mission.txt
 
 # Create system log file
-RUN cat > /tmp/level3/data/system.log << 'EOL'
-2024-01-15 10:30:15 INFO User login successful
-2024-01-15 10:31:22 ERROR Database connection failed
-2024-01-15 10:32:10 WARNING Disk space low
-2024-01-15 10:33:45 INFO Processing request
-2024-01-15 10:34:12 ERROR Authentication failed
-2024-01-15 10:35:33 WARNING Memory usage high
-2024-01-15 10:36:21 ERROR Service unavailable
-2024-01-15 10:37:18 INFO Task completed
-EOL
+RUN printf "2024-01-15 10:30:15 INFO User login successful\n2024-01-15 10:31:22 ERROR Database connection failed\n2024-01-15 10:32:10 WARNING Disk space low\n2024-01-15 10:33:45 INFO Processing request\n2024-01-15 10:34:12 ERROR Authentication failed\n2024-01-15 10:35:33 WARNING Memory usage high\n2024-01-15 10:36:21 ERROR Service unavailable\n2024-01-15 10:37:18 INFO Task completed\n" > /tmp/level3/data/system.log
 
 # Create access log file
-RUN cat > /tmp/level3/data/access.log << 'EOL'
-192.168.1.100 alice GET /home
-192.168.1.101 bob POST /login
-192.168.1.100 alice GET /profile
-192.168.1.102 charlie GET /home
-192.168.1.100 alice POST /update
-192.168.1.101 bob GET /dashboard
-192.168.1.103 diana GET /home
-192.168.1.100 alice GET /settings
-EOL
+RUN printf "192.168.1.100 alice GET /home\n192.168.1.101 bob POST /login\n192.168.1.100 alice GET /profile\n192.168.1.102 charlie GET /home\n192.168.1.100 alice POST /update\n192.168.1.101 bob GET /dashboard\n192.168.1.103 diana GET /home\n192.168.1.100 alice GET /settings\n" > /tmp/level3/data/access.log
 
 # Create Level 3 analysis script
-RUN cat > /tmp/level3/analyze.sh << 'EOL'
-#!/bin/bash
-echo "🕵️ DATA ANALYSIS CHALLENGE"
-echo "=========================="
-echo ""
-echo "Let's test your text processing skills!"
-echo ""
-
-read -p "How many ERROR messages are in system.log? " errors
-read -p "How many WARNING messages are in system.log? " warnings  
-read -p "Which user appears most frequently in access.log? " user
-
-echo ""
-score=0
-
-if [ "$errors" = "3" ]; then
-    echo "✅ Correct! Found 3 ERROR messages (+1 point)"
-    ((score++))
-else
-    echo "❌ Wrong count. Try: grep ERROR data/system.log | wc -l"
-fi
-
-if [ "$warnings" = "2" ]; then
-    echo "✅ Correct! Found 2 WARNING messages (+1 point)"
-    ((score++))
-else
-    echo "❌ Wrong count. Try: grep WARNING data/system.log | wc -l"
-fi
-
-if [ "$user" = "alice" ]; then
-    echo "✅ Correct! Alice appears most frequently (+2 points)"
-    ((score+=2))
-else
-    echo "❌ Wrong user. Try: cut -d' ' -f2 data/access.log | sort | uniq -c | sort -nr"
-fi
-
-echo ""
-echo "📊 FINAL SCORE: $score/4"
-
-if [ $score -eq 4 ]; then
-    echo ""
-    echo "🎉 LEVEL 3 COMPLETED! 🎉"
-    echo "You're now a text processing expert!"
-    echo ""
-    echo "🏆 CONGRATULATIONS! 🏆"
-    echo "You have completed the Linux Fundamentals Course!"
-    echo ""
-    echo "═══════════════════════════════════════"
-    echo "│        CERTIFICATE OF COMPLETION       │"
-    echo "│                                         │"
-    echo "│       Linux Command Line Basics        │"
-    echo "│                                         │"
-    echo "│  ✓ File System Navigation              │"
-    echo "│  ✓ File Operations & Creation          │"
-    echo "│  ✓ Text Processing & Search            │"
-    echo "│                                         │"
-    echo "│       Completed: $(date +%Y-%m-%d)           │"
-    echo "═══════════════════════════════════════"
-else
-    echo ""
-    echo "Keep practicing! Review the hints above."
-fi
-EOL
+RUN printf '#!/bin/bash\necho "🕵️ DATA ANALYSIS CHALLENGE"\necho "=========================="\necho ""\necho "Let'"'"'s test your text processing skills!"\necho ""\n\nread -p "How many ERROR messages are in system.log? " errors\nread -p "How many WARNING messages are in system.log? " warnings\nread -p "Which user appears most frequently in access.log? " user\n\necho ""\nscore=0\n\nif [ "$errors" = "3" ]; then\n    echo "✅ Correct! Found 3 ERROR messages (+1 point)"\n    ((score++))\nelse\n    echo "❌ Wrong count. Try: grep ERROR data/system.log | wc -l"\nfi\n\nif [ "$warnings" = "2" ]; then\n    echo "✅ Correct! Found 2 WARNING messages (+1 point)"\n    ((score++))\nelse\n    echo "❌ Wrong count. Try: grep WARNING data/system.log | wc -l"\nfi\n\nif [ "$user" = "alice" ]; then\n    echo "✅ Correct! Alice appears most frequently (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Wrong user. Try: cut -d'"'"' '"'"' -f2 data/access.log | sort | uniq -c | sort -nr"\nfi\n\necho ""\necho "📊 FINAL SCORE: $score/4"\n\nif [ $score -eq 4 ]; then\n    echo ""\n    echo "🎉 LEVEL 3 COMPLETED! 🎉"\n    echo "You'"'"'re now a text processing expert!"\n    echo ""\n    echo "🏆 CONGRATULATIONS! 🏆"\n    echo "You have completed the Linux Fundamentals Course!"\n    echo ""\n    echo "═══════════════════════════════════════"\n    echo "│        CERTIFICATE OF COMPLETION       │"\n    echo "│                                         │"\n    echo "│       Linux Command Line Basics        │"\n    echo "│                                         │"\n    echo "│  ✓ File System Navigation              │"\n    echo "│  ✓ File Operations & Creation          │"\n    echo "│  ✓ Text Processing & Search            │"\n    echo "│                                         │"\n    echo "│       Completed: $(date +%%Y-%%m-%%d)           │"\n    echo "═══════════════════════════════════════"\nelse\n    echo ""\n    echo "Keep practicing! Review the hints above."\nfi\n' > /tmp/level3/analyze.sh
 
 RUN chmod +x /tmp/level3/analyze.sh
 
@@ -269,26 +77,7 @@ RUN cp -r /game/level1 /home/student/ \
  && chown -R student:student /home/student
 
 # Create welcome script
-RUN cat > /home/student/start_learning.sh << 'EOL'
-#!/bin/bash
-clear
-echo "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"
-echo "=================================================="
-echo ""
-echo "This interactive course will teach you:"
-echo "• File system navigation (ls, cd, pwd)"
-echo "• File operations (touch, cp, mv, rm)"
-echo "• Text processing (grep, cut, sort, uniq)"
-echo ""
-echo "📂 Start with: cd level1 && cat welcome.txt"
-echo ""
-echo "💡 Helpful commands:"
-echo "   help     - Show this message"
-echo "   ls       - List files and folders"
-echo "   cd       - Change directory"
-echo "   cat      - Display file contents"
-echo ""
-EOL
+RUN printf '#!/bin/bash\nclear\necho "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"\necho "=================================================="\necho ""\necho "This interactive course will teach you:"\necho "• File system navigation (ls, cd, pwd)"\necho "• File operations (touch, cp, mv, rm)"\necho "• Text processing (grep, cut, sort, uniq)"\necho ""\necho "📂 Start with: cd level1 && cat welcome.txt"\necho ""\necho "💡 Helpful commands:"\necho "   help     - Show this message"\necho "   ls       - List files and folders"\necho "   cd       - Change directory"\necho "   cat      - Display file contents"\necho ""\n' > /home/student/start_learning.sh
 
 RUN chmod +x /home/student/start_learning.sh
 
