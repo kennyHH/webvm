@@ -1,92 +1,200 @@
-# Educational Linux Game Dockerfile
-# Based on WebVM - teaches Linux fundamentals through progressive challenges
+# Educational Linux Learning System - Beginner Friendly
+# Designed for students with zero Linux command line experience
+# Progressive 5-level system with protected validation scripts
 
 FROM --platform=i386 i386/debian:buster
 
+# Fix sources for older Debian version
 RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Install essential packages
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get install -y apt-utils zip unzip vim less binutils curl \
+ && apt-get install -y apt-utils zip unzip vim less binutils curl wget \
+    cowsay figlet toilet lolcat bc tree file \
  && rm -rf /var/lib/apt/lists/*
 
-# Create user (WebVM expects 'user' not 'student')
+# Create users
 RUN useradd -m user && echo "user:password" | chpasswd \
  && echo "root:password" | chpasswd
 
-# WebVM environment setup
-RUN mkdir -p /home/user/documents && chown -R user:user /home/user/documents
+# Create protected script directories
+RUN mkdir -p /usr/local/share/learning-scripts/{validators,helpers,content}
 
-# LEVEL 1: File System Navigation & Basic Commands
-RUN mkdir -p /game/level1
-
-# Create Level 1 welcome file using printf (more reliable than heredoc in Docker)
-RUN printf "🎓 LINUX EDUCATION GAME - LEVEL 1 🎓\n\nLearn Linux fundamentals through hands-on challenges!\nComplete each challenge to earn your certificate.\n\nCHALLENGE 1: Navigate and explore\n- Use 'ls' to list files and folders\n- Use 'cd' to change directories\n- Use 'pwd' to see your current location\n\n🎯 GOAL: Find the hidden message in this directory!\nHint: Try 'ls -la' to see hidden files\n" > /game/level1/welcome.txt
-
-# Create hidden clue file
-RUN echo "Q29uZ3JhdHVsYXRpb25zISBZb3UgZm91bmQgdGhlIGhpZGRlbiBmaWxlIQpZb3VyIExldmVsIDEga2V5IGlzOiBuYXZpZ2F0b3IK" > /game/level1/.hidden_clue
-
-# Create Level 1 checker script
-RUN printf '#!/bin/bash\necho "🔍 LEVEL 1 PROGRESS CHECKER"\necho "=========================="\necho ""\nread -p "Did you find the hidden file? Enter the key you discovered: " input\nif [ "$input" = "navigator" ]; then\n    echo ""\n    echo "🎉 LEVEL 1 COMPLETED! 🎉"\n    echo "Skills learned: ls, cd, pwd, hidden files"\n    echo ""\n    echo "🔓 Level 2 unlocked! Password: navigator"\n    echo "Extract level2.zip using: unzip -P navigator level2.zip"\nelse\n    echo "❌ Not quite right. Keep exploring!"\n    echo "Hint: Use '"'"'cat .hidden_clue | base64 -d'"'"' if you found the file"\nfi\n' > /game/level1/check_level1.sh
-
-RUN chmod +x /game/level1/check_level1.sh
-
-# LEVEL 2: File Creation and Text Manipulation
-RUN mkdir -p /tmp/level2/workspace
-
-# Create Level 2 instructions
-RUN printf "📝 LEVEL 2: File Operations & Text Skills\n============================================\n\nCHALLENGES:\n1. Create a file called 'my_notes.txt'\n2. Write your name in the file using echo\n3. Create a directory called 'projects'\n4. Copy my_notes.txt into the projects folder\n5. Find the secret word hidden in secret_data.txt\n\nCommands to learn: touch, echo, mkdir, cp, grep, cat\n" > /tmp/level2/instructions.txt
-
-# Create secret data file
-RUN printf "The secret word is: creator\nThis line contains no secrets\nRandom text here\nAnother line without secrets\nMore random content\n" > /tmp/level2/secret_data.txt
-
-# Create Level 2 validation script
-RUN printf '#!/bin/bash\necho "🔍 LEVEL 2 VALIDATION"\necho "===================="\nscore=0\necho ""\n\nif [ -f "my_notes.txt" ]; then\n    echo "✅ File my_notes.txt created (+1 point)"\n    ((score++))\nelse\n    echo "❌ File my_notes.txt not found"\nfi\n\nif [ -d "projects" ]; then\n    echo "✅ Directory projects created (+1 point)"\n    ((score++))\nelse\n    echo "❌ Directory projects not found"\nfi\n\nif [ -f "projects/my_notes.txt" ]; then\n    echo "✅ File copied to projects (+1 point)"\n    ((score++))\nelse\n    echo "❌ File not copied to projects directory"\nfi\n\necho ""\nread -p "What secret word did you find? " secret\nif [ "$secret" = "creator" ]; then\n    echo "✅ Secret word found! (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Wrong secret word. Try: grep '"'"'secret'"'"' secret_data.txt"\nfi\n\necho ""\necho "📊 SCORE: $score/5"\n\nif [ $score -eq 5 ]; then\n    echo ""\n    echo "🎉 LEVEL 2 COMPLETED! 🎉"\n    echo "You'"'"'ve mastered file operations!"\n    echo ""\n    echo "🔓 Level 3 unlocked! Password: creator"\nelse\n    echo ""\n    echo "Keep practicing! Complete all tasks to proceed."\nfi\n' > /tmp/level2/validate.sh
-
-RUN chmod +x /tmp/level2/validate.sh
-
-# Package Level 2
-RUN cd /tmp && zip -r -P navigator /game/level2.zip level2 && rm -rf /tmp/level2
-
-# LEVEL 3: Text Processing and Search
-RUN mkdir -p /tmp/level3/data
-
-# Create Level 3 mission file
-RUN printf "🔍 LEVEL 3: Text Processing & Search Mastery\n=============================================\n\nSCENARIO: You're a data analyst investigating log files!\n\nTASKS:\n1. Find all ERROR messages in system.log\n2. Count how many WARNING messages exist\n3. Extract unique IP addresses from access.log\n4. Find the most frequent user in the logs\n\nCommands to master: grep, wc, sort, uniq, cut, awk\n" > /tmp/level3/mission.txt
-
-# Create system log file
-RUN printf "2024-01-15 10:30:15 INFO User login successful\n2024-01-15 10:31:22 ERROR Database connection failed\n2024-01-15 10:32:10 WARNING Disk space low\n2024-01-15 10:33:45 INFO Processing request\n2024-01-15 10:34:12 ERROR Authentication failed\n2024-01-15 10:35:33 WARNING Memory usage high\n2024-01-15 10:36:21 ERROR Service unavailable\n2024-01-15 10:37:18 INFO Task completed\n" > /tmp/level3/data/system.log
-
-# Create access log file
-RUN printf "192.168.1.100 alice GET /home\n192.168.1.101 bob POST /login\n192.168.1.100 alice GET /profile\n192.168.1.102 charlie GET /home\n192.168.1.100 alice POST /update\n192.168.1.101 bob GET /dashboard\n192.168.1.103 diana GET /home\n192.168.1.100 alice GET /settings\n" > /tmp/level3/data/access.log
-
-# Create Level 3 analysis script
-RUN printf '#!/bin/bash\necho "🕵️ DATA ANALYSIS CHALLENGE"\necho "=========================="\necho ""\necho "Let'"'"'s test your text processing skills!"\necho ""\n\nread -p "How many ERROR messages are in system.log? " errors\nread -p "How many WARNING messages are in system.log? " warnings\nread -p "Which user appears most frequently in access.log? " user\n\necho ""\nscore=0\n\nif [ "$errors" = "3" ]; then\n    echo "✅ Correct! Found 3 ERROR messages (+1 point)"\n    ((score++))\nelse\n    echo "❌ Wrong count. Try: grep ERROR data/system.log | wc -l"\nfi\n\nif [ "$warnings" = "2" ]; then\n    echo "✅ Correct! Found 2 WARNING messages (+1 point)"\n    ((score++))\nelse\n    echo "❌ Wrong count. Try: grep WARNING data/system.log | wc -l"\nfi\n\nif [ "$user" = "alice" ]; then\n    echo "✅ Correct! Alice appears most frequently (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Wrong user. Try: cut -d'"'"' '"'"' -f2 data/access.log | sort | uniq -c | sort -nr"\nfi\n\necho ""\necho "📊 FINAL SCORE: $score/4"\n\nif [ $score -eq 4 ]; then\n    echo ""\n    echo "🎉 LEVEL 3 COMPLETED! 🎉"\n    echo "You'"'"'re now a text processing expert!"\n    echo ""\n    echo "🏆 CONGRATULATIONS! 🏆"\n    echo "You have completed the Linux Fundamentals Course!"\n    echo ""\n    echo "═══════════════════════════════════════"\n    echo "│        CERTIFICATE OF COMPLETION       │"\n    echo "│                                         │"\n    echo "│       Linux Command Line Basics        │"\n    echo "│                                         │"\n    echo "│  ✓ File System Navigation              │"\n    echo "│  ✓ File Operations & Creation          │"\n    echo "│  ✓ Text Processing & Search            │"\n    echo "│                                         │"\n    echo "│       Completed: $(date +%%Y-%%m-%%d)           │"\n    echo "═══════════════════════════════════════"\nelse\n    echo ""\n    echo "Keep practicing! Review the hints above."\nfi\n' > /tmp/level3/analyze.sh
-
-RUN chmod +x /tmp/level3/analyze.sh
-
-# Package Level 3
-RUN cd /tmp && zip -r -P creator /game/level3.zip level3 && rm -rf /tmp/level3
-
-# Copy all starting files to user's home
-RUN cp -r /game/level1 /home/user/ \
- && cp /game/level2.zip /home/user/ \
- && cp /game/level3.zip /home/user/ \
+# Create user learning environment
+RUN mkdir -p /home/user/{practice,completed} \
  && chown -R user:user /home/user
 
-# Create welcome script
-RUN printf '#!/bin/bash\nclear\necho "🎓 Welcome to Linux Fundamentals Learning Lab! 🎓"\necho "=================================================="\necho ""\necho "This interactive course will teach you:"\necho "• File system navigation (ls, cd, pwd)"\necho "• File operations (touch, cp, mv, rm)"\necho "• Text processing (grep, cut, sort, uniq)"\necho ""\necho "📂 Start with: cd level1 && cat welcome.txt"\necho ""\necho "💡 Helpful commands:"\necho "   help     - Show this message"\necho "   ls       - List files and folders"\necho "   cd       - Change directory"\necho "   cat      - Display file contents"\necho ""\n' > /home/user/start_learning.sh
+# Initialize progress tracking
+RUN echo "current_level:1" > /home/user/.learning_progress \
+ && echo "completed_levels:" >> /home/user/.learning_progress \
+ && echo "total_score:0" >> /home/user/.learning_progress \
+ && echo "skills_learned:" >> /home/user/.learning_progress \
+ && chown user:user /home/user/.learning_progress
 
-RUN chmod +x /home/user/start_learning.sh
+# =============================================================================
+# LEVEL 1: First Steps - "Hello Terminal"
+# Goal: Get comfortable typing commands and seeing output
+# Commands: echo, whoami, pwd
+# =============================================================================
 
-# Set up bash configuration
-RUN echo 'alias help="/home/user/start_learning.sh"' >> /home/user/.bashrc \
- && echo '/home/user/start_learning.sh' >> /home/user/.bashrc
+RUN mkdir -p /home/user/level1
 
-# Set working directory and environment variables
+# Create Level 1 welcome and instructions
+RUN printf "🎓 WELCOME TO LINUX LEARNING LAB! 🎓\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n👋 Hello! This is your first time using a Linux terminal!\n   Don't worry - we'll start VERY simple.\n\n🎯 LEVEL 1 GOAL: Learn to make the computer talk to you!\n\n📝 YOUR FIRST CHALLENGES:\n\n1️⃣  Make the computer say hello:\n    Type: echo \"Hello World\"\n\n2️⃣  Ask the computer who you are:\n    Type: whoami\n\n3️⃣  Ask where you are:\n    Type: pwd\n\n4️⃣  Say something about yourself:\n    Type: echo \"My name is [put your name here]\"\n\n5️⃣  Try a fun command:\n    Type: echo \"I am learning Linux!\"\n\n💡 HELP COMMANDS:\n   help  - Show helpful reminders\n   hint  - Get a gentle hint\n   check - Check your progress\n\n🚀 When you've tried all the commands above, type: check\n" > /home/user/level1/welcome.txt
+
+# Create Level 1 validator
+RUN printf '#!/bin/bash\necho "🔍 LEVEL 1 PROGRESS CHECK"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\nscore=0\necho "Let me check what commands you have used..."\necho ""\n\n# Check command history\nif history | grep -q "echo.*[Hh]ello"; then\n    echo "✅ You used echo to say hello! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: echo \"Hello World\""\nfi\n\nif history | grep -q "whoami"; then\n    echo "✅ You asked who you are! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: whoami"\nfi\n\nif history | grep -q "pwd"; then\n    echo "✅ You asked where you are! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: pwd"\nfi\n\nif history | grep -q "echo.*name"; then\n    echo "✅ You told me your name! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: echo \"My name is [your name]\""\nfi\n\necho ""\necho "🎯 Quick Quiz: What does the '"'"'pwd'"'"' command show you?"\nread -p "Your answer: " answer\n\nif [[ $answer =~ (where|location|directory|folder|path) ]]; then\n    echo "✅ Perfect understanding! You know pwd shows your location! (+2 points)"\n    ((score+=2))\nelse\n    echo "💡 pwd shows WHERE you are in the computer (your current location)"\n    echo "   Try typing it again and see what it shows!"\nfi\n\necho ""\necho "📊 YOUR SCORE: $score/6 points"\n\nif [ $score -ge 5 ]; then\n    echo ""\n    figlet "LEVEL 1" | lolcat 2>/dev/null || figlet "LEVEL 1"\n    echo "🎉 COMPLETED! 🎉"\n    echo ""\n    echo "🏆 Skills Mastered:"\n    echo "   • echo - Make the computer talk"\n    echo "   • whoami - Find out who you are"\n    echo "   • pwd - See where you are"\n    echo ""\n    echo "🔓 LEVEL 2 UNLOCKED!"\n    echo "📁 Next: cd ../level2 && cat welcome.txt"\n    echo ""\n    \n    # Update progress\n    sed -i "s/current_level:1/current_level:2/" /home/user/.learning_progress\n    echo "1" >> /home/user/.completed_levels\n    \n    # Create level 2 directory for user\n    mkdir -p /home/user/level2\n    cp /usr/local/share/learning-scripts/content/level2/* /home/user/level2/ 2>/dev/null || true\n    echo "echo,whoami,pwd" >> /home/user/.skills_learned\nelse\n    echo ""\n    echo "🔄 Keep practicing! Try the commands you haven'"'"'t used yet."\n    echo "💡 Type '"'"'help'"'"' if you need reminders about what to do!"\nfi\n' > /usr/local/share/learning-scripts/validators/check_level1.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/validators/check_level1.sh
+
+# =============================================================================
+# LEVEL 2: Looking Around - "What's Here?"
+# Goal: Learn to see what's in folders
+# Commands: ls, ls -l, ls -la
+# =============================================================================
+
+RUN mkdir -p /usr/local/share/learning-scripts/content/level2/practice-files
+
+# Create Level 2 content
+RUN printf "📂 LEVEL 2: EXPLORING FILES AND FOLDERS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to see what files and folders are around you!\n\nIn the real world, you need to look around to see what'"'"'s there.\nIn Linux, we use special commands to \"look around\" digitally!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  See what files are in this folder:\n    Type: ls\n\n2️⃣  See MORE details about the files:\n    Type: ls -l\n    (This shows file sizes, dates, permissions)\n\n3️⃣  See HIDDEN files too:\n    Type: ls -la\n    (Files starting with . are usually hidden)\n\n4️⃣  Look inside the practice-files folder:\n    Type: ls practice-files\n\n5️⃣  See details of practice-files contents:\n    Type: ls -l practice-files\n\n🎯 TREASURE HUNT: Find all 5 files in practice-files!\n   Then type '"'"'check'"'"' to see if you found them all!\n\n💡 Remember: help, hint, and check are always available!\n" > /usr/local/share/learning-scripts/content/level2/welcome.txt
+
+# Create practice files
+RUN echo "Congratulations! You found the first practice file!" > /usr/local/share/learning-scripts/content/level2/practice-files/readme.txt
+RUN echo "This file contains important information about Linux!" > /usr/local/share/learning-scripts/content/level2/practice-files/important.txt
+RUN echo "You are doing great with your Linux learning!" > /usr/local/share/learning-scripts/content/level2/practice-files/encouragement.txt
+RUN echo "Secret treasure: You found a hidden message!" > /usr/local/share/learning-scripts/content/level2/practice-files/.secret.txt
+RUN echo "Final file: You are becoming a Linux explorer!" > /usr/local/share/learning-scripts/content/level2/practice-files/final.txt
+
+# Create Level 2 validator
+RUN printf '#!/bin/bash\necho "🔍 LEVEL 2 PROGRESS CHECK"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\nscore=0\necho "Checking what you'"'"'ve discovered..."\necho ""\n\n# Check if they used ls commands\nif history | grep -q "ls"; then\n    echo "✅ You used ls to look around! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: ls"\nfi\n\nif history | grep -q "ls -l"; then\n    echo "✅ You used ls -l for detailed view! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: ls -l"\nfi\n\nif history | grep -q "ls.*practice-files"; then\n    echo "✅ You looked inside practice-files! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: ls practice-files"\nfi\n\necho ""\necho "🕵️ TREASURE HUNT QUIZ:"\nread -p "How many files did you find in practice-files (including hidden ones)? " count\n\nif [ "$count" = "5" ]; then\n    echo "✅ Perfect! You found all 5 files (including the hidden one)! (+2 points)"\n    ((score+=2))\nelse\n    echo "💡 Hint: Use '"'"'ls -la practice-files'"'"' to see ALL files (including hidden ones)"\n    echo "   Hidden files start with a dot (.)"\nfi\n\necho ""\nread -p "What does '"'"'ls -l'"'"' show that regular '"'"'ls'"'"' doesn'"'"'t? " answer\n\nif [[ $answer =~ (detail|size|date|permission|info) ]]; then\n    echo "✅ Excellent! You understand ls -l shows more details! (+1 point)"\n    ((score++))\nelse\n    echo "💡 ls -l shows detailed information like file sizes and dates!"\nfi\n\necho ""\necho "📊 YOUR SCORE: $score/6 points"\n\nif [ $score -ge 5 ]; then\n    echo ""\n    figlet "LEVEL 2" | lolcat 2>/dev/null || figlet "LEVEL 2"\n    echo "🎉 COMPLETED! 🎉"\n    echo ""\n    echo "🏆 New Skills Mastered:"\n    echo "   • ls - List files and folders"\n    echo "   • ls -l - Show detailed information"\n    echo "   • ls -la - Show hidden files too"\n    echo ""\n    echo "🔓 LEVEL 3 UNLOCKED!"\n    echo "📁 Next: cd ../level3 && cat welcome.txt"\n    echo ""\n    \n    # Update progress\n    sed -i "s/current_level:2/current_level:3/" /home/user/.learning_progress\n    echo "2" >> /home/user/.completed_levels\n    \n    # Create level 3 directory\n    mkdir -p /home/user/level3\n    cp /usr/local/share/learning-scripts/content/level3/* /home/user/level3/ 2>/dev/null || true\nelse\n    echo ""\n    echo "🔄 Keep exploring! Try the commands you haven'"'"'t used yet."\n    echo "💡 Remember to look for hidden files with '"'"'ls -la'"'"'!"\nfi\n' > /usr/local/share/learning-scripts/validators/check_level2.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/validators/check_level2.sh
+
+# =============================================================================
+# LEVEL 3: Reading Files - "Digital Books"
+# Goal: Learn to read file contents
+# Commands: cat, less, head, tail
+# =============================================================================
+
+RUN mkdir -p /usr/local/share/learning-scripts/content/level3
+
+# Create Level 3 content
+RUN printf "📖 LEVEL 3: READING FILES (Digital Books!)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to read what'"'"'s inside files!\n\nFiles are like digital books - you need to open them to read!\nIn Linux, we don'"'"'t double-click. We use special commands!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  Read a short file:\n    Type: cat story.txt\n\n2️⃣  Read the instructions file:\n    Type: cat instructions.txt\n\n3️⃣  Look at just the beginning of a long file:\n    Type: head long_story.txt\n\n4️⃣  Look at just the end of a long file:\n    Type: tail long_story.txt\n\n5️⃣  Read a long file page by page:\n    Type: less long_story.txt\n    (Use SPACEBAR to go forward, '"'"'q'"'"' to quit)\n\n🎯 SECRET MISSION: Find the magic word hidden in one of the files!\n   Read all the files and look for the secret word!\n\n💡 TIP: cat is for short files, less is for long files!\n" > /usr/local/share/learning-scripts/content/level3/welcome.txt
+
+# Create readable files for Level 3
+RUN printf "Once upon a time, there was a student learning Linux.\nThey discovered that reading files was easy and fun!\nThe magic word they learned was: EXPLORER\nAnd they lived happily ever after, exploring the digital world!\n" > /usr/local/share/learning-scripts/content/level3/story.txt
+
+RUN printf "INSTRUCTIONS FOR LEVEL 3:\n\n1. Use '"'"'cat'"'"' to read short files\n2. Use '"'"'less'"'"' to read long files (press '"'"'q'"'"' to quit)\n3. Use '"'"'head'"'"' to see the beginning of files\n4. Use '"'"'tail'"'"' to see the end of files\n\nRemember: The secret word is hidden in one of these files!\nRead them all to find it!\n" > /usr/local/share/learning-scripts/content/level3/instructions.txt
+
+RUN printf "This is a longer story that demonstrates the '"'"'less'"'"' command.\n\nChapter 1: The Beginning\nOnce there was a curious student who wanted to learn Linux.\nThey started with simple commands and built their confidence.\n\nChapter 2: The Journey\nDay by day, they learned new commands.\nFirst echo, then ls, and now reading files!\nEach command was like discovering a new superpower.\n\nChapter 3: The Discovery\nThe student realized that Linux was not scary at all.\nIt was just a different way of talking to computers.\nAnd computers, it turns out, are quite friendly!\n\nChapter 4: The Secret\nIn this story, there is a hidden secret word: READER\nThis word represents someone who can read files in Linux!\n\nChapter 5: The Future\nWith each new skill, the student grew more confident.\nSoon they would be ready for even more advanced commands.\nThe journey of learning never ends!\n\nThe End.\n\nP.S. - You are doing amazing! Keep going!\n" > /usr/local/share/learning-scripts/content/level3/long_story.txt
+
+# Create Level 3 validator
+RUN printf '#!/bin/bash\necho "📖 LEVEL 3 PROGRESS CHECK"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\nscore=0\necho "Checking your file reading skills..."\necho ""\n\n# Check if they used file reading commands\nif history | grep -q "cat story.txt"; then\n    echo "✅ You read story.txt with cat! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: cat story.txt"\nfi\n\nif history | grep -q "cat instructions.txt"; then\n    echo "✅ You read the instructions! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: cat instructions.txt"\nfi\n\nif history | grep -q "head\\|tail"; then\n    echo "✅ You used head or tail command! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: head long_story.txt or tail long_story.txt"\nfi\n\nif history | grep -q "less"; then\n    echo "✅ You used less to read long files! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: less long_story.txt (press q to quit)"\nfi\n\necho ""\necho "🕵️ SECRET WORD CHALLENGE:"\nread -p "What secret word did you find in the files? " secret\n\nsecret_lower=$(echo "$secret" | tr '"'"'[:upper:]'"'"' '"'"'[:lower:]'"'"')\n\nif [[ $secret_lower == "explorer" || $secret_lower == "reader" ]]; then\n    echo "✅ Amazing! You found a secret word! (+2 points)"\n    ((score+=2))\nelse\n    echo "💡 Keep reading the files! Look for words that seem special or important."\nfi\n\necho ""\necho "📊 YOUR SCORE: $score/6 points"\n\nif [ $score -ge 5 ]; then\n    echo ""\n    figlet "LEVEL 3" | lolcat 2>/dev/null || figlet "LEVEL 3"\n    echo "🎉 COMPLETED! 🎉"\n    echo ""\n    echo "🏆 New Skills Mastered:"\n    echo "   • cat - Read short files"\n    echo "   • less - Read long files page by page"\n    echo "   • head - See beginning of files"\n    echo "   • tail - See end of files"\n    echo ""\n    echo "🔓 LEVEL 4 UNLOCKED!"\n    echo "📁 Next: cd ../level4 && cat welcome.txt"\n    echo ""\n    \n    # Update progress\n    sed -i "s/current_level:3/current_level:4/" /home/user/.learning_progress\n    echo "3" >> /home/user/.completed_levels\n    \n    # Create level 4 directory\n    mkdir -p /home/user/level4\n    cp /usr/local/share/learning-scripts/content/level4/* /home/user/level4/ 2>/dev/null || true\nelse\n    echo ""\n    echo "🔄 Keep reading! Try all the different file reading commands."\n    echo "💡 Don'"'"'t forget to look for the secret word!"\nfi\n' > /usr/local/share/learning-scripts/validators/check_level3.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/validators/check_level3.sh
+
+# =============================================================================
+# LEVEL 4: Moving Around - "Digital Navigation"
+# Goal: Navigate between folders
+# Commands: cd, cd .., pwd (reinforcement)
+# =============================================================================
+
+RUN mkdir -p /usr/local/share/learning-scripts/content/level4/{treasure,secret,practice}
+
+# Create Level 4 content and navigation structure
+RUN printf "🧭 LEVEL 4: MOVING AROUND (Digital Navigation!)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to move between folders like a digital explorer!\n\nJust like in real life, you need to move around to explore.\nIn Linux, folders are like rooms in a house!\n\n📁 FOLDER STRUCTURE:\nlevel4/\n├── treasure/     (contains gold!)\n├── secret/       (contains mysteries!)\n└── practice/     (for practicing!)\n\n📝 YOUR CHALLENGES:\n\n1️⃣  See where you are right now:\n    Type: pwd\n\n2️⃣  Go into the treasure folder:\n    Type: cd treasure\n\n3️⃣  See what'"'"'s in the treasure folder:\n    Type: ls\n\n4️⃣  Go back to the main level4 folder:\n    Type: cd ..\n    (.. means \"go up one folder\")\n\n5️⃣  Check where you are:\n    Type: pwd\n\n6️⃣  Go into the secret folder:\n    Type: cd secret\n\n7️⃣  Explore what'"'"'s there:\n    Type: ls\n\n8️⃣  Go back to main folder:\n    Type: cd ..\n\n🎯 TREASURE HUNT: Find the golden key in one of the folders!\n\n💡 TIPS:\n   • pwd = shows where you are\n   • cd [folder] = go into folder\n   • cd .. = go back up\n   • ls = see what'"'"'s here\n" > /usr/local/share/learning-scripts/content/level4/welcome.txt
+
+# Create treasure hunt files
+RUN echo "🏆 CONGRATULATIONS! You found the golden treasure!" > /usr/local/share/learning-scripts/content/level4/treasure/gold.txt
+RUN echo "💰 Golden Key: NAVIGATOR" > /usr/local/share/learning-scripts/content/level4/treasure/golden_key.txt
+RUN echo "🎁 Extra treasure for brave explorers!" > /usr/local/share/learning-scripts/content/level4/treasure/bonus.txt
+
+RUN echo "🤫 This is a secret message: Well done, explorer!" > /usr/local/share/learning-scripts/content/level4/secret/message.txt
+RUN echo "🔐 Secret code: PATHFINDER" > /usr/local/share/learning-scripts/content/level4/secret/code.txt
+
+RUN echo "This is a practice file for navigation!" > /usr/local/share/learning-scripts/content/level4/practice/test.txt
+
+# Create Level 4 validator
+RUN printf '#!/bin/bash\necho "🧭 LEVEL 4 PROGRESS CHECK"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\nscore=0\necho "Checking your navigation skills..."\necho ""\n\n# Check if they used navigation commands\nif history | grep -q "cd treasure"; then\n    echo "✅ You went into the treasure folder! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: cd treasure"\nfi\n\nif history | grep -q "cd secret"; then\n    echo "✅ You explored the secret folder! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: cd secret"\nfi\n\nif history | grep -q "cd \\.\\."; then\n    echo "✅ You used cd .. to go back! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: cd .. to go back up"\nfi\n\nif history | grep -q "pwd"; then\n    echo "✅ You checked where you are with pwd! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: pwd to see where you are"\nfi\n\necho ""\necho "🏴‍☠️ TREASURE HUNT QUIZ:"\nread -p "What was the golden key you found in the treasure folder? " key\n\nif [[ $key =~ (NAVIGATOR|navigator) ]]; then\n    echo "✅ Perfect! You found the golden key: NAVIGATOR! (+2 points)"\n    ((score+=2))\nelse\n    echo "💡 Go to the treasure folder and read the golden_key.txt file!"\n    echo "   Hint: cd treasure, then cat golden_key.txt"\nfi\n\necho ""\necho "📊 YOUR SCORE: $score/6 points"\n\nif [ $score -ge 5 ]; then\n    echo ""\n    figlet "LEVEL 4" | lolcat 2>/dev/null || figlet "LEVEL 4"\n    echo "🎉 COMPLETED! 🎉"\n    echo ""\n    echo "🏆 New Skills Mastered:"\n    echo "   • cd [folder] - Go into a folder"\n    echo "   • cd .. - Go back up one folder"\n    echo "   • pwd - See current location (reinforced!)"\n    echo ""\n    echo "🔓 LEVEL 5 UNLOCKED!"\n    echo "📁 Next: cd ../level5 && cat welcome.txt"\n    echo ""\n    \n    # Update progress\n    sed -i "s/current_level:4/current_level:5/" /home/user/.learning_progress\n    echo "4" >> /home/user/.completed_levels\n    \n    # Create level 5 directory\n    mkdir -p /home/user/level5\n    cp /usr/local/share/learning-scripts/content/level5/* /home/user/level5/ 2>/dev/null || true\nelse\n    echo ""\n    echo "🔄 Keep exploring! Try navigating to all the folders."\n    echo "💡 Remember: cd [folder] to go in, cd .. to go back!"\nfi\n' > /usr/local/share/learning-scripts/validators/check_level4.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/validators/check_level4.sh
+
+# =============================================================================
+# LEVEL 5: Creating Things - "Digital Creator"
+# Goal: Make first files and folders
+# Commands: touch, echo >, mkdir
+# =============================================================================
+
+RUN mkdir -p /usr/local/share/learning-scripts/content/level5
+
+# Create Level 5 content
+RUN printf "✨ LEVEL 5: CREATING FILES AND FOLDERS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to create your own files and folders!\n\nNow you'"'"'re ready to make your own digital creations!\nJust like an artist with a blank canvas!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  Create your first empty file:\n    Type: touch my_first_file.txt\n    Then check it exists: ls\n\n2️⃣  Write something in a file:\n    Type: echo \"Hello, I am learning Linux!\" > my_message.txt\n    Then read it: cat my_message.txt\n\n3️⃣  Create a file with your name:\n    Type: echo \"My name is [YOUR NAME]\" > about_me.txt\n\n4️⃣  Create your first folder:\n    Type: mkdir my_projects\n    Then check it exists: ls\n\n5️⃣  Create another folder:\n    Type: mkdir completed_work\n\n6️⃣  Write a file about your favorite color:\n    Type: echo \"My favorite color is [COLOR]\" > favorite_color.txt\n\n7️⃣  Create a folder inside my_projects:\n    Type: mkdir my_projects/level5_work\n\n🎯 CREATIVE CHALLENGE: Create 3 files and 2 folders!\n   Make them about yourself - be creative!\n\n💡 REMEMBER:\n   • touch = create empty file\n   • echo \"text\" > file.txt = create file with text\n   • mkdir = create folder\n" > /usr/local/share/learning-scripts/content/level5/welcome.txt
+
+# Create Level 5 validator
+RUN printf '#!/bin/bash\necho "✨ LEVEL 5 PROGRESS CHECK"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\nscore=0\necho "Checking your creative skills..."\necho ""\n\n# Check if they created files\nfile_count=$(ls -1 *.txt 2>/dev/null | wc -l)\nfolder_count=$(ls -1d */ 2>/dev/null | wc -l)\n\necho "🔍 Found $file_count text files and $folder_count folders"\necho ""\n\nif [ $file_count -ge 3 ]; then\n    echo "✅ You created at least 3 files! (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Create at least 3 .txt files (you have $file_count)"\nfi\n\nif [ $folder_count -ge 2 ]; then\n    echo "✅ You created at least 2 folders! (+2 points)"\n    ((score+=2))\nelse\n    echo "❌ Create at least 2 folders (you have $folder_count)"\nfi\n\n# Check specific commands were used\nif history | grep -q "touch"; then\n    echo "✅ You used the touch command! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: touch filename.txt"\nfi\n\nif history | grep -q "echo.*>"; then\n    echo "✅ You used echo to write to files! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: echo \"some text\" > filename.txt"\nfi\n\nif history | grep -q "mkdir"; then\n    echo "✅ You used mkdir to create folders! (+1 point)"\n    ((score++))\nelse\n    echo "❌ Try: mkdir foldername"\nfi\n\necho ""\necho "🎨 CREATIVITY BONUS:"\nif [ -f "about_me.txt" ]; then\n    echo "✅ You created about_me.txt! (+1 bonus point)"\n    ((score++))\nfi\n\necho ""\necho "📊 YOUR SCORE: $score/8 points"\n\nif [ $score -ge 6 ]; then\n    echo ""\n    figlet "LEVEL 5" | lolcat 2>/dev/null || figlet "LEVEL 5"\n    echo "🎉 COMPLETED! 🎉"\n    echo ""\n    echo "🏆 New Skills Mastered:"\n    echo "   • touch - Create empty files"\n    echo "   • echo > - Write text to files"\n    echo "   • mkdir - Create folders"\n    echo ""\n    echo "🎨 You are now a Digital Creator!"\n    echo ""\n    echo "🏆 CONGRATULATIONS! 🏆"\n    echo ""\n    echo "You have completed the Linux Fundamentals Course!"\n    echo "You'"'"'ve learned the essential building blocks of Linux!"\n    echo ""\n    echo "═══════════════════════════════════════"\n    echo "│        CERTIFICATE OF COMPLETION       │"\n    echo "│                                         │"\n    echo "│       Linux Command Line Basics        │"\n    echo "│                                         │"\n    echo "│  ✓ Terminal Interaction (echo, pwd)    │"\n    echo "│  ✓ File Exploration (ls commands)      │"\n    echo "│  ✓ File Reading (cat, less, head)      │"\n    echo "│  ✓ Navigation (cd, pwd)                │"\n    echo "│  ✓ File Creation (touch, echo, mkdir)  │"\n    echo "│                                         │"\n    echo "│       Completed: $(date +%%Y-%%m-%%d)           │"\n    echo "═══════════════════════════════════════"\n    echo ""\n    echo "🚀 You'"'"'re ready for more advanced Linux topics!"\n    \n    # Update progress\n    sed -i "s/current_level:5/current_level:completed/" /home/user/.learning_progress\n    echo "5" >> /home/user/.completed_levels\nelse\n    echo ""\n    echo "🔄 Keep creating! You need at least 3 files and 2 folders."\n    echo "💡 Be creative and make files about yourself!"\nfi\n' > /usr/local/share/learning-scripts/validators/check_level5.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/validators/check_level5.sh
+
+# =============================================================================
+# HELPER SCRIPTS - Available in all levels
+# =============================================================================
+
+# Create main help script
+RUN printf '#!/bin/bash\ncurrent_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)\necho ""\necho "🎓 LINUX LEARNING LAB - HELP SYSTEM 🎓"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\necho "📍 You are currently on LEVEL $current_level"\necho ""\ncase $current_level in\n    1)\n        echo "🎯 LEVEL 1 COMMANDS:"\n        echo "   echo \"text\"  - Make computer say something"\n        echo "   whoami       - See who you are"\n        echo "   pwd          - See where you are"\n        echo ""\n        echo "💡 Try: echo \"Hello World\""\n        ;;\n    2)\n        echo "🎯 LEVEL 2 COMMANDS:"\n        echo "   ls           - List files"\n        echo "   ls -l        - List with details"\n        echo "   ls -la       - List including hidden files"\n        echo "   ls folder    - List contents of folder"\n        echo ""\n        echo "💡 Try: ls -la practice-files"\n        ;;\n    3)\n        echo "🎯 LEVEL 3 COMMANDS:"\n        echo "   cat file.txt - Read a file"\n        echo "   less file.txt - Read long file (q to quit)"\n        echo "   head file.txt - See beginning of file"\n        echo "   tail file.txt - See end of file"\n        echo ""\n        echo "💡 Try: cat story.txt"\n        ;;\n    4)\n        echo "🎯 LEVEL 4 COMMANDS:"\n        echo "   cd folder    - Go into folder"\n        echo "   cd ..        - Go back up"\n        echo "   pwd          - See current location"\n        echo "   ls           - See what'"'"'s here"\n        echo ""\n        echo "💡 Try: cd treasure"\n        ;;\n    5)\n        echo "🎯 LEVEL 5 COMMANDS:"\n        echo "   touch file.txt - Create empty file"\n        echo "   echo \"text\" > file.txt - Create file with text"\n        echo "   mkdir folder - Create folder"\n        echo "   ls           - See your creations"\n        echo ""\n        echo "💡 Try: touch my_file.txt"\n        ;;\n    *)\n        echo "🎯 COMMON COMMANDS:"\n        echo "   help         - Show this help"\n        echo "   hint         - Get a hint"\n        echo "   check        - Check your progress"\n        echo "   progress     - See overall progress"\n        ;;\nesac\necho ""\necho "🚨 UNIVERSAL COMMANDS (work everywhere):"\necho "   help         - Show this help message"\necho "   hint         - Get context-aware hint"\necho "   check        - Check current level progress"\necho "   progress     - See your overall progress"\necho ""\n' > /usr/local/share/learning-scripts/helpers/help.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/helpers/help.sh
+
+# Create hint script
+RUN printf '#!/bin/bash\ncurrent_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)\nlast_command=$(history | tail -1 | awk '"'"'{print $2}'"'"' 2>/dev/null)\necho ""\necho "💡 CONTEXT-AWARE HINT SYSTEM"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\ncase $current_level in\n    1)\n        if [[ -z $last_command ]]; then\n            echo "🚀 Start with your first command: echo \"Hello World\""\n        elif [[ $last_command == "echo" ]]; then\n            echo "✅ Great! Now try: whoami"\n        elif [[ $last_command == "whoami" ]]; then\n            echo "✅ Perfect! Now try: pwd"\n        else\n            echo "🎯 Level 1 goal: Try echo, whoami, and pwd commands"\n        fi\n        ;;\n    2)\n        if [[ $last_command == "ls" ]]; then\n            echo "✅ Good! Now try: ls -l for more details"\n        else\n            echo "🔍 Try: ls to see files, then ls -la to see hidden files"\n        fi\n        ;;\n    3)\n        echo "📖 Try reading files: cat story.txt"\n        echo "📚 For long files: less long_story.txt (q to quit)"\n        ;;\n    4)\n        echo "🧭 Navigation tips:"\n        echo "   • cd treasure (go into folder)"\n        echo "   • ls (see what'"'"'s there)"\n        echo "   • cd .. (go back up)"\n        ;;\n    5)\n        echo "✨ Creation tips:"\n        echo "   • touch filename.txt (empty file)"\n        echo "   • echo \"text\" > file.txt (file with content)"\n        echo "   • mkdir foldername (new folder)"\n        ;;\n    *)\n        echo "🤔 Not sure what to do? Try '"'"'help'"'"' for your current level!"\n        ;;\nesac\necho ""\n' > /usr/local/share/learning-scripts/helpers/hint.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/helpers/hint.sh
+
+# Create progress script
+RUN printf '#!/bin/bash\necho ""\necho "📊 YOUR LEARNING PROGRESS"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n\ncurrent_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)\ncompleted_count=$(wc -l < /home/user/.completed_levels 2>/dev/null || echo 0)\ntotal_score=$(grep "total_score" /home/user/.learning_progress | cut -d: -f2)\n\necho "🎯 Current Level: $current_level/5"\necho "✅ Completed Levels: $completed_count"\necho "⭐ Total Score: $total_score points"\necho ""\n\necho "🏆 LEARNING JOURNEY:"\nfor i in {1..5}; do\n    if [ $i -lt $current_level ] 2>/dev/null; then\n        echo "   Level $i: ✅ COMPLETED"\n    elif [ $i -eq $current_level ] 2>/dev/null; then\n        echo "   Level $i: 🔄 IN PROGRESS"\n    else\n        echo "   Level $i: 🔒 LOCKED"\n    fi\ndone\n\necho ""\ncase $current_level in\n    1) echo "💪 Next: Master echo, whoami, and pwd commands!" ;;\n    2) echo "💪 Next: Learn to explore files with ls commands!" ;;\n    3) echo "💪 Next: Master file reading with cat and less!" ;;\n    4) echo "💪 Next: Navigate folders like a pro!" ;;\n    5) echo "💪 Next: Create your own files and folders!" ;;\n    *) echo "💪 Keep going! You'"'"'re doing amazing!" ;;\nesac\necho ""\n' > /usr/local/share/learning-scripts/helpers/progress.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/helpers/progress.sh
+
+# Create universal check command that routes to current level
+RUN printf '#!/bin/bash\ncurrent_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)\nif [ -f "/usr/local/share/learning-scripts/validators/check_level${current_level}.sh" ]; then\n    /usr/local/share/learning-scripts/validators/check_level${current_level}.sh\nelse\n    echo "🎉 Congratulations! You have completed all available levels!"\n    echo "You are now a Linux command line expert!"\nfi\n' > /usr/local/share/learning-scripts/helpers/check.sh
+
+RUN chmod +x /usr/local/share/learning-scripts/helpers/check.sh
+
+# Create symbolic links for easy access
+RUN ln -sf /usr/local/share/learning-scripts/helpers/help.sh /usr/local/bin/help \
+ && ln -sf /usr/local/share/learning-scripts/helpers/hint.sh /usr/local/bin/hint \
+ && ln -sf /usr/local/share/learning-scripts/helpers/progress.sh /usr/local/bin/progress \
+ && ln -sf /usr/local/share/learning-scripts/helpers/check.sh /usr/local/bin/check
+
+# =============================================================================
+# INITIAL SETUP AND WELCOME
+# =============================================================================
+
+# Copy initial level content to user directory
+RUN cp -r /usr/local/share/learning-scripts/content/level2 /home/user/ 2>/dev/null || true \
+ && cp -r /usr/local/share/learning-scripts/content/level3 /home/user/ 2>/dev/null || true \
+ && cp -r /usr/local/share/learning-scripts/content/level4 /home/user/ 2>/dev/null || true \
+ && cp -r /usr/local/share/learning-scripts/content/level5 /home/user/ 2>/dev/null || true
+
+# Set proper ownership
+RUN chown -R user:user /home/user
+
+# Create welcome script that runs on login
+RUN printf '#!/bin/bash\nclear\necho ""\nfiglet "Linux Learning Lab" 2>/dev/null || echo "LINUX LEARNING LAB"\necho "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\necho "🎓 Welcome to your Linux Learning Adventure!"\necho ""\necho "👋 This is a safe, fun place to learn Linux commands from scratch."\necho "   Don'"'"'t worry if you'"'"'ve never used a terminal before!"\necho ""\necho "🚀 GETTING STARTED:"\necho "   📁 cd level1          - Go to your first lesson"\necho "   📖 cat welcome.txt    - Read the welcome message"\necho "   💡 help              - Get help anytime"\necho "   🔍 hint              - Get gentle hints"\necho "   ✅ check             - Check your progress"\necho ""\necho "🎯 YOUR MISSION: Complete 5 progressive levels and become a Linux expert!"\necho ""\necho "💪 Remember: Every expert was once a beginner. You'"'"'ve got this!"\necho ""\necho "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\necho ""\n' > /home/user/welcome.sh
+
+RUN chmod +x /home/user/welcome.sh
+
+# Add welcome to bashrc so it runs on every login
+RUN echo '' >> /home/user/.bashrc \
+ && echo '# Linux Learning Lab Welcome' >> /home/user/.bashrc \
+ && echo '/home/user/welcome.sh' >> /home/user/.bashrc \
+ && echo '' >> /home/user/.bashrc
+
+# Set working directory and environment
 WORKDIR /home/user
 ENV HOME="/home/user" TERM="xterm" USER="user" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
 
-# Start bash in login mode for WebVM
+# Start bash in login mode
 CMD ["/bin/bash", "-l"]
