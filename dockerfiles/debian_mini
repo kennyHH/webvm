@@ -45,71 +45,26 @@ RUN mkdir -p /home/user/level1
 # Create Level 1 welcome and instructions
 RUN printf "🎓 WELCOME TO LINUX LEARNING LAB! 🎓\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n👋 Hello! This is your first time using a Linux terminal!\n   Don't worry - we'll start VERY simple.\n\n🎯 LEVEL 1 GOAL: Learn to make the computer talk to you!\n\n📝 YOUR FIRST CHALLENGES:\n\n1️⃣  Make the computer say hello:\n    Type: echo \"Hello World\"\n\n2️⃣  Ask the computer who you are:\n    Type: whoami\n\n3️⃣  Ask where you are:\n    Type: pwd\n\n4️⃣  Say something about yourself:\n    Type: echo \"My name is [put your name here]\"\n\n5️⃣  Try a fun command:\n    Type: echo \"I am learning Linux!\"\n\n💡 HELP COMMANDS:\n   help  - Show helpful reminders\n   hint  - Get a gentle hint\n   check - Check your progress\n\n🚀 When you've tried all the commands above, type: check\n" > /home/user/level1/welcome.txt
 
-# Create Level 1 validator script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "🔍 LEVEL 1 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "Let me check what commands you have used..."' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+# Ensure directories exist before creating scripts
+RUN mkdir -p /usr/local/share/learning-scripts/validators /usr/local/share/learning-scripts/helpers /usr/local/share/learning-scripts/content
 
-RUN echo 'if history | grep -q "echo.*[Hh]ello"; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "✅ You used echo to say hello! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "❌ Try: echo \"Hello World\""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'if history | grep -q "whoami"; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "✅ You asked who you are! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "❌ Try: whoami"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'if history | grep -q "pwd"; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "✅ You asked where you are! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "❌ Try: pwd"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'if history | grep -q "echo.*name"; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "✅ You told me your name! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "❌ Try: echo \"My name is [your name]\""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "🎯 Quick Quiz: What does the \"pwd\" command show you?"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'read -p "Your answer: " answer' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'if [[ $answer =~ (where|location|directory|folder|path) ]]; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "✅ Perfect! You know pwd shows your location! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "💡 pwd shows WHERE you are in the computer!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "📊 YOUR SCORE: $score/6 points"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'if [ $score -ge 5 ]; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    figlet "LEVEL 1" 2>/dev/null || echo "LEVEL 1 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "🎉 COMPLETED! 🎉"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "🔓 LEVEL 2 UNLOCKED!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "📁 Next: cd ../level2 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
-
-RUN echo '    sed -i "s/current_level:1/current_level:2/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "1" >> /home/user/.completed_levels' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    mkdir -p /home/user/level2' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    cp /usr/local/share/learning-scripts/content/level2/* /home/user/level2/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "🔄 Keep practicing! Try all the commands."' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '    echo "💡 Type \"help\" for reminders!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+# Create simplified Level 1 validator script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'echo "LEVEL 1 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'if history | grep -q echo; then echo "Used echo (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'if history | grep -q whoami; then echo "Used whoami (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'if history | grep -q pwd; then echo "Used pwd (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'echo "Score: $score/3"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'if [ $score -ge 2 ]; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  echo "LEVEL 1 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  echo "Next: cd ../level2 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  sed -i "s/current_level:1/current_level:2/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  mkdir -p /home/user/level2' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  cp /usr/local/share/learning-scripts/content/level2/* /home/user/level2/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo '  echo "Keep practicing! Try: echo, whoami, pwd"' >> /usr/local/share/learning-scripts/validators/check_level1.sh
+RUN echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh
 
 RUN chmod +x /usr/local/share/learning-scripts/validators/check_level1.sh
 
@@ -131,50 +86,22 @@ RUN echo "You are doing great with your Linux learning!" > /usr/local/share/lear
 RUN echo "Secret treasure: You found a hidden message!" > /usr/local/share/learning-scripts/content/level2/practice-files/.secret.txt
 RUN echo "Final file: You are becoming a Linux explorer!" > /usr/local/share/learning-scripts/content/level2/practice-files/final.txt
 
-# Create Level 2 validator script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo "🔍 LEVEL 2 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level2.sh
-
-RUN echo 'if history | grep -q "ls"; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "✅ You used ls to look around! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "❌ Try: ls"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
-
-RUN echo 'if history | grep -q "ls -l"; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "✅ You used ls -l for detailed view! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "❌ Try: ls -l"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
-
-RUN echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo "🕵️ TREASURE HUNT QUIZ:"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'read -p "How many files in practice-files (including hidden)? " count' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'if [ "$count" = "5" ]; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "✅ Perfect! Found all 5 files! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "💡 Try: ls -la practice-files"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
-
-RUN echo 'echo "📊 YOUR SCORE: $score/4 points"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'if [ $score -ge 3 ]; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    figlet "LEVEL 2" 2>/dev/null || echo "LEVEL 2 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "🎉 COMPLETED! 🎉"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "🔓 LEVEL 3 UNLOCKED!"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "📁 Next: cd ../level3 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    sed -i "s/current_level:2/current_level:3/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "2" >> /home/user/.completed_levels' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    mkdir -p /home/user/level3' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    cp /usr/local/share/learning-scripts/content/level3/* /home/user/level3/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '    echo "🔄 Keep exploring! Try ls -la practice-files"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+# Create simplified Level 2 validator script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'echo "LEVEL 2 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'if history | grep -q "ls"; then echo "Used ls (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'if history | grep -q "ls -l"; then echo "Used ls -l (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'echo "Score: $score/2"' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'if [ $score -ge 1 ]; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  echo "LEVEL 2 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  echo "Next: cd ../level3 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  sed -i "s/current_level:2/current_level:3/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  mkdir -p /home/user/level3' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  cp /usr/local/share/learning-scripts/content/level3/* /home/user/level3/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo '  echo "Keep practicing! Try: ls and ls -l"' >> /usr/local/share/learning-scripts/validators/check_level2.sh
+RUN echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh
 
 RUN chmod +x /usr/local/share/learning-scripts/validators/check_level2.sh
 
@@ -196,47 +123,22 @@ RUN printf "INSTRUCTIONS FOR LEVEL 3:\n\n1. Use '"'"'cat'"'"' to read short file
 
 RUN printf "This is a longer story that demonstrates the '"'"'less'"'"' command.\n\nChapter 1: The Beginning\nOnce there was a curious student who wanted to learn Linux.\nThey started with simple commands and built their confidence.\n\nChapter 2: The Journey\nDay by day, they learned new commands.\nFirst echo, then ls, and now reading files!\nEach command was like discovering a new superpower.\n\nChapter 3: The Discovery\nThe student realized that Linux was not scary at all.\nIt was just a different way of talking to computers.\nAnd computers, it turns out, are quite friendly!\n\nChapter 4: The Secret\nIn this story, there is a hidden secret word: READER\nThis word represents someone who can read files in Linux!\n\nChapter 5: The Future\nWith each new skill, the student grew more confident.\nSoon they would be ready for even more advanced commands.\nThe journey of learning never ends!\n\nThe End.\n\nP.S. - You are doing amazing! Keep going!\n" > /usr/local/share/learning-scripts/content/level3/long_story.txt
 
-# Create Level 3 validator script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'echo "📖 LEVEL 3 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level3.sh
-
-RUN echo 'if history | grep -q "cat story.txt"; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "✅ You read story.txt! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
-
-RUN echo 'if history | grep -q "cat instructions.txt"; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "✅ You read instructions! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
-
-RUN echo 'if history | grep -q "head\\|tail"; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "✅ You used head or tail! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
-
-RUN echo 'echo "🕵️ SECRET WORD CHALLENGE:"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'read -p "What secret word did you find? " secret' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'secret_lower=$(echo "$secret" | tr [:upper:] [:lower:])' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'if [[ $secret_lower == "explorer" || $secret_lower == "reader" ]]; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "✅ Found secret word! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
-
-RUN echo 'echo "📊 YOUR SCORE: $score/5 points"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'if [ $score -ge 4 ]; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    figlet "LEVEL 3" 2>/dev/null || echo "LEVEL 3 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "🎉 COMPLETED! 🎉"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "🔓 LEVEL 4 UNLOCKED!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "📁 Next: cd ../level4 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    sed -i "s/current_level:3/current_level:4/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "3" >> /home/user/.completed_levels' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    mkdir -p /home/user/level4' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    cp /usr/local/share/learning-scripts/content/level4/* /home/user/level4/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '    echo "🔄 Keep reading files! Look for secret words!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+# Create simplified Level 3 validator script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'echo "LEVEL 3 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'if history | grep -q "cat"; then echo "Used cat (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'if history | grep -q "less\\|head\\|tail"; then echo "Used file reader (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'echo "Score: $score/2"' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'if [ $score -ge 1 ]; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  echo "LEVEL 3 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  echo "Next: cd ../level4 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  sed -i "s/current_level:3/current_level:4/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  mkdir -p /home/user/level4' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  cp /usr/local/share/learning-scripts/content/level4/* /home/user/level4/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo '  echo "Keep reading! Try: cat story.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh
+RUN echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh
 
 RUN chmod +x /usr/local/share/learning-scripts/validators/check_level3.sh
 
@@ -261,46 +163,22 @@ RUN echo "🔐 Secret code: PATHFINDER" > /usr/local/share/learning-scripts/cont
 
 RUN echo "This is a practice file for navigation!" > /usr/local/share/learning-scripts/content/level4/practice/test.txt
 
-# Create Level 4 validator script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'echo "🧭 LEVEL 4 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level4.sh
-
-RUN echo 'if history | grep -q "cd treasure"; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "✅ You went to treasure folder! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
-
-RUN echo 'if history | grep -q "cd secret"; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "✅ You explored secret folder! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
-
-RUN echo 'if history | grep -q "cd \\.\\."; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "✅ You used cd .. to go back! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
-
-RUN echo 'echo "🏴‍☠️ TREASURE HUNT:"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'read -p "What golden key did you find? " key' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'if [[ $key =~ (NAVIGATOR|navigator) ]]; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "✅ Found golden key! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
-
-RUN echo 'echo "📊 YOUR SCORE: $score/5 points"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'if [ $score -ge 4 ]; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    figlet "LEVEL 4" 2>/dev/null || echo "LEVEL 4 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "🎉 COMPLETED! 🎉"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "🔓 LEVEL 5 UNLOCKED!"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "📁 Next: cd ../level5 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    sed -i "s/current_level:4/current_level:5/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "4" >> /home/user/.completed_levels' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    mkdir -p /home/user/level5' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    cp /usr/local/share/learning-scripts/content/level5/* /home/user/level5/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo '    echo "🔄 Keep exploring! Try cd treasure"' >> /usr/local/share/learning-scripts/validators/check_level4.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+# Create simplified Level 4 validator script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'echo "LEVEL 4 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'if history | grep -q "cd"; then echo "Used cd (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'if history | grep -q "pwd"; then echo "Used pwd (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'echo "Score: $score/2"' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'if [ $score -ge 1 ]; then' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  echo "LEVEL 4 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  echo "Next: cd ../level5 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  sed -i "s/current_level:4/current_level:5/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  mkdir -p /home/user/level5' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  cp /usr/local/share/learning-scripts/content/level5/* /home/user/level5/ 2>/dev/null || true' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'else' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo '  echo "Keep practicing! Try: cd treasure"' >> /usr/local/share/learning-scripts/validators/check_level4.sh
+RUN echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level4.sh
 
 RUN chmod +x /usr/local/share/learning-scripts/validators/check_level4.sh
 
@@ -315,46 +193,21 @@ RUN mkdir -p /usr/local/share/learning-scripts/content/level5
 # Create Level 5 content
 RUN printf "✨ LEVEL 5: CREATING FILES AND FOLDERS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🎯 GOAL: Learn to create your own files and folders!\n\nNow you'"'"'re ready to make your own digital creations!\nJust like an artist with a blank canvas!\n\n📝 YOUR CHALLENGES:\n\n1️⃣  Create your first empty file:\n    Type: touch my_first_file.txt\n    Then check it exists: ls\n\n2️⃣  Write something in a file:\n    Type: echo \"Hello, I am learning Linux!\" > my_message.txt\n    Then read it: cat my_message.txt\n\n3️⃣  Create a file with your name:\n    Type: echo \"My name is [YOUR NAME]\" > about_me.txt\n\n4️⃣  Create your first folder:\n    Type: mkdir my_projects\n    Then check it exists: ls\n\n5️⃣  Create another folder:\n    Type: mkdir completed_work\n\n6️⃣  Write a file about your favorite color:\n    Type: echo \"My favorite color is [COLOR]\" > favorite_color.txt\n\n7️⃣  Create a folder inside my_projects:\n    Type: mkdir my_projects/level5_work\n\n🎯 CREATIVE CHALLENGE: Create 3 files and 2 folders!\n   Make them about yourself - be creative!\n\n💡 REMEMBER:\n   • touch = create empty file\n   • echo \"text\" > file.txt = create file with text\n   • mkdir = create folder\n" > /usr/local/share/learning-scripts/content/level5/welcome.txt
 
-# Create Level 5 validator script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'echo "✨ LEVEL 5 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'file_count=$(ls -1 *.txt 2>/dev/null | wc -l)' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'folder_count=$(ls -1d */ 2>/dev/null | wc -l)' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'echo "🔍 Found $file_count files and $folder_count folders"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'if [ $file_count -ge 3 ]; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "✅ Created 3+ files! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'if [ $folder_count -ge 2 ]; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "✅ Created 2+ folders! (+2 points)"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    ((score+=2))' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'if history | grep -q "touch"; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "✅ Used touch command! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'if history | grep -q "mkdir"; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "✅ Used mkdir command! (+1 point)"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    ((score++))' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
-
-RUN echo 'echo "📊 YOUR SCORE: $score/6 points"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'if [ $score -ge 5 ]; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    figlet "LEVEL 5" 2>/dev/null || echo "LEVEL 5 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "🎉 COMPLETED! 🎉"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "🏆 CONGRATULATIONS! You are now a Linux expert!"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "You completed all 5 levels!"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    sed -i "s/current_level:5/current_level:completed/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "5" >> /home/user/.completed_levels' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo '    echo "🔄 Keep creating! Need 3 files and 2 folders"' >> /usr/local/share/learning-scripts/validators/check_level5.sh && \
-    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+# Create simplified Level 5 validator script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'echo "LEVEL 5 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'if history | grep -q "touch"; then echo "Used touch (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'if history | grep -q "mkdir"; then echo "Used mkdir (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'if history | grep -q "echo.*>"; then echo "Used echo > (+1)"; ((score++)); fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'echo "Score: $score/3"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'if [ $score -ge 2 ]; then' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo '  echo "LEVEL 5 COMPLETED!"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo '  echo "CONGRATULATIONS! You completed all levels!"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo '  sed -i "s/current_level:5/current_level:completed/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'else' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo '  echo "Keep creating! Try: touch, mkdir, echo >"' >> /usr/local/share/learning-scripts/validators/check_level5.sh
+RUN echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level5.sh
 
 RUN chmod +x /usr/local/share/learning-scripts/validators/check_level5.sh
 
@@ -362,38 +215,19 @@ RUN chmod +x /usr/local/share/learning-scripts/validators/check_level5.sh
 # HELPER SCRIPTS - Available in all levels
 # =============================================================================
 
-# Create main help script
-RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo 'current_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo 'echo "🎓 LINUX LEARNING LAB - HELP 🎓"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo 'echo "📍 You are on LEVEL $current_level"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/helpers/help.sh
-
-RUN echo 'case $current_level in' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    1)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 LEVEL 1: echo, whoami, pwd"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "💡 Try: echo \"Hello World\""' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    2)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 LEVEL 2: ls, ls -l, ls -la"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "💡 Try: ls -la practice-files"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    3)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 LEVEL 3: cat, less, head, tail"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "💡 Try: cat story.txt"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    4)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 LEVEL 4: cd, cd .., pwd"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "💡 Try: cd treasure"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    5)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 LEVEL 5: touch, echo >, mkdir"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "💡 Try: touch my_file.txt"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '    *)' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        echo "🎯 Universal: help, hint, check, progress"' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo '        ;;' >> /usr/local/share/learning-scripts/helpers/help.sh && \
-    echo 'esac' >> /usr/local/share/learning-scripts/helpers/help.sh
+# Create simplified help script
+RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo 'current_level=$(grep "current_level" /home/user/.learning_progress | cut -d: -f2)' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo 'echo "LINUX LEARNING LAB - HELP"' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo 'echo "You are on LEVEL $current_level"' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo 'case $current_level in' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  1) echo "Commands: echo, whoami, pwd";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  2) echo "Commands: ls, ls -l, ls -la";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  3) echo "Commands: cat, less, head, tail";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  4) echo "Commands: cd, cd .., pwd";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  5) echo "Commands: touch, echo >, mkdir";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo '  *) echo "Available: help, hint, check, progress";;' >> /usr/local/share/learning-scripts/helpers/help.sh
+RUN echo 'esac' >> /usr/local/share/learning-scripts/helpers/help.sh
 
 # Create hint script
 RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/helpers/hint.sh && \
@@ -457,24 +291,20 @@ RUN cp -r /usr/local/share/learning-scripts/content/level2 /home/user/ 2>/dev/nu
 # Set proper ownership
 RUN chown -R user:user /home/user
 
-# Create welcome script
-RUN echo '#!/bin/bash' > /home/user/welcome.sh && \
-    echo 'clear' >> /home/user/welcome.sh && \
-    echo 'figlet "Linux Learning Lab" 2>/dev/null || echo "LINUX LEARNING LAB"' >> /home/user/welcome.sh && \
-    echo 'echo "🎓 Welcome to your Linux Learning Adventure!"' >> /home/user/welcome.sh && \
-    echo 'echo ""' >> /home/user/welcome.sh && \
-    echo 'echo "👋 Safe place to learn Linux from scratch!"' >> /home/user/welcome.sh && \
-    echo 'echo ""' >> /home/user/welcome.sh && \
-    echo 'echo "🚀 GETTING STARTED:"' >> /home/user/welcome.sh && \
-    echo 'echo "   📁 cd level1      - Go to first lesson"' >> /home/user/welcome.sh && \
-    echo 'echo "   📖 cat welcome.txt - Read welcome message"' >> /home/user/welcome.sh && \
-    echo 'echo "   💡 help          - Get help anytime"' >> /home/user/welcome.sh && \
-    echo 'echo "   🔍 hint          - Get gentle hints"' >> /home/user/welcome.sh && \
-    echo 'echo "   ✅ check         - Check progress"' >> /home/user/welcome.sh && \
-    echo 'echo ""' >> /home/user/welcome.sh && \
-    echo 'echo "🎯 MISSION: Complete 5 levels!"' >> /home/user/welcome.sh && \
-    echo 'echo "💪 Every expert was once a beginner!"' >> /home/user/welcome.sh && \
-    echo 'echo ""' >> /home/user/welcome.sh
+# Create simplified welcome script
+RUN echo '#!/bin/bash' > /home/user/welcome.sh
+RUN echo 'clear' >> /home/user/welcome.sh
+RUN echo 'echo "LINUX LEARNING LAB"' >> /home/user/welcome.sh
+RUN echo 'echo "Welcome to your Linux Learning Adventure!"' >> /home/user/welcome.sh
+RUN echo 'echo ""' >> /home/user/welcome.sh
+RUN echo 'echo "GETTING STARTED:"' >> /home/user/welcome.sh
+RUN echo 'echo "  cd level1         - Go to first lesson"' >> /home/user/welcome.sh
+RUN echo 'echo "  cat welcome.txt   - Read welcome"' >> /home/user/welcome.sh
+RUN echo 'echo "  help             - Get help"' >> /home/user/welcome.sh
+RUN echo 'echo "  hint             - Get hints"' >> /home/user/welcome.sh
+RUN echo 'echo "  check            - Check progress"' >> /home/user/welcome.sh
+RUN echo 'echo ""' >> /home/user/welcome.sh
+RUN echo 'echo "MISSION: Complete 5 levels!"' >> /home/user/welcome.sh
 
 RUN chmod +x /home/user/welcome.sh
 
