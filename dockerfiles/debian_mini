@@ -1,4 +1,4 @@
-# Educational Linux Learning System - Fixed Progress Tracking
+# Educational Linux Learning System - Proper History Tracking
 # Designed for students with zero Linux command line experience
 
 FROM --platform=i386 i386/debian:buster
@@ -29,6 +29,19 @@ RUN mkdir -p /usr/local/share/learning-scripts/validators && \
     echo "total_score:0" >> /home/user/.learning_progress && \
     chown -R user:user /home/user
 
+# Configure bash history for immediate and persistent logging
+RUN echo '# Configure bash history for learning system' >> /home/user/.bashrc && \
+    echo 'export HISTFILE=~/.bash_history' >> /home/user/.bashrc && \
+    echo 'export HISTSIZE=10000' >> /home/user/.bashrc && \
+    echo 'export HISTFILESIZE=10000' >> /home/user/.bashrc && \
+    echo 'export HISTCONTROL=""' >> /home/user/.bashrc && \
+    echo 'export HISTIGNORE=""' >> /home/user/.bashrc && \
+    echo 'shopt -s histappend' >> /home/user/.bashrc && \
+    echo 'shopt -s cmdhist' >> /home/user/.bashrc && \
+    echo 'PROMPT_COMMAND="history -a; history -c; history -r"' >> /home/user/.bashrc && \
+    touch /home/user/.bash_history && \
+    chown user:user /home/user/.bash_history
+
 # Create all Level 1 content in one command
 RUN echo "WELCOME TO LINUX LEARNING LAB!" > /home/user/level1/welcome.txt && \
     echo "" >> /home/user/level1/welcome.txt && \
@@ -49,26 +62,45 @@ RUN echo "WELCOME TO LINUX LEARNING LAB!" > /home/user/level1/welcome.txt && \
     echo "" >> /home/user/level1/welcome.txt && \
     echo "When you've tried the commands above, type: check" >> /home/user/level1/welcome.txt
 
-# Create Level 1 validator script - simplified and reliable
+# Create Level 1 validator script with proper history checking
 RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'echo "LEVEL 1 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'echo "========================"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo "Testing if you can use the basic commands..."' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '# Force history to sync' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'history -a' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '# Just check if the commands exist and work' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'if command -v echo >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "✓ echo command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '# Check if history file exists and has content' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'if [ ! -f ~/.bash_history ] || [ ! -s ~/.bash_history ]; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "❌ No command history found yet."' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "   Please try the commands first, then type check again!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "Required commands:"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "  echo Hello World"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "  whoami"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "  pwd"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  exit 0' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'if command -v whoami >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "✓ whoami command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '# Check for echo command usage' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'if grep -q "^echo" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "✓ Used echo command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "❌ Haven'\''t used echo yet"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo 'if command -v pwd >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "✓ pwd command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '# Check for whoami command usage' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'if grep -q "^whoami" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "✓ Used whoami command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "❌ Haven'\''t used whoami yet"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '# Check for pwd command usage' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'if grep -q "^pwd" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "✓ Used pwd command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "❌ Haven'\''t used pwd yet"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'echo "Score: $score/3"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
@@ -84,11 +116,12 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "  cd level2 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo '  sed -i "s/current_level:1/current_level:2/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "Something went wrong. All basic commands should be available."' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "Try typing these commands to practice:"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "  echo Hello World"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "  whoami"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
-    echo '  echo "  pwd"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "Keep practicing! You need to try all 3 commands:"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  if [ $score -lt 1 ]; then echo "  → echo Hello World"; fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  if ! grep -q "^whoami" ~/.bash_history; then echo "  → whoami"; fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  if ! grep -q "^pwd" ~/.bash_history; then echo "  → pwd"; fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo ""' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
+    echo '  echo "Then type '\''check'\'' again!"' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level1.sh && \
     chmod +x /usr/local/share/learning-scripts/validators/check_level1.sh
 
@@ -120,17 +153,22 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo 'echo "LEVEL 2 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'echo "========================"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo "Testing if you can use listing commands..."' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '# Force history to sync' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo 'history -a' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'if command -v ls >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "✓ ls command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '# Check for ls command usage' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo 'if grep -q "^ls" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "✓ Used ls command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "❌ Haven'\''t used ls yet"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '# Test if we can list current directory' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo 'if ls . >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "✓ ls command works (+1)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '# Check for ls -l usage' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo 'if grep -q "^ls -l" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "✓ Used ls -l command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "❌ Haven'\''t used ls -l yet"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'echo "Score: $score/2"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
@@ -147,10 +185,11 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "  cd level3 && cat welcome.txt"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo '  sed -i "s/current_level:2/current_level:3/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "Keep practicing! Try these commands:"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "  ls"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "  ls -l"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
-    echo '  echo "  ls -la"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "Keep practicing! You need to try:"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  if ! grep -q "^ls" ~/.bash_history; then echo "  → ls"; fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  if ! grep -q "^ls -l" ~/.bash_history; then echo "  → ls -l"; fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo ""' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
+    echo '  echo "Then type '\''check'\'' again!"' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level2.sh && \
     chmod +x /usr/local/share/learning-scripts/validators/check_level2.sh
 
@@ -192,16 +231,22 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo 'echo "LEVEL 3 PROGRESS CHECK"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'echo "========================"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'echo "Testing if you can use file reading commands..."' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '# Force history to sync' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo 'history -a' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'score=0' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'if command -v cat >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "✓ cat command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '# Check for cat command usage' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo 'if grep -q "^cat" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "✓ Used cat command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "❌ Haven'\''t used cat yet"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo 'if command -v head >/dev/null 2>&1; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "✓ head command available (+1)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '# Check for file reading commands' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo 'if grep -qE "^(head|tail|less)" ~/.bash_history; then' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "✓ Used file reading command (+1)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  ((score++))' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "❌ Haven'\''t used head/tail/less yet"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'echo ""' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'echo "Score: $score/2"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
@@ -219,10 +264,11 @@ RUN echo '#!/bin/bash' > /usr/local/share/learning-scripts/validators/check_leve
     echo '  echo "   ✓ File reading (cat, head, tail, less)"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo '  sed -i "s/current_level:3/current_level:completed/" /home/user/.learning_progress' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'else' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "Keep practicing! Try these commands:"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "  cat story.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "  head long_story.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
-    echo '  echo "  tail long_story.txt"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "Keep practicing! You need to try:"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  if ! grep -q "^cat" ~/.bash_history; then echo "  → cat story.txt"; fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  if ! grep -qE "^(head|tail|less)" ~/.bash_history; then echo "  → head long_story.txt"; fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo ""' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
+    echo '  echo "Then type '\''check'\'' again!"' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     echo 'fi' >> /usr/local/share/learning-scripts/validators/check_level3.sh && \
     chmod +x /usr/local/share/learning-scripts/validators/check_level3.sh
 
